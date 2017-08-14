@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Bware</string>
+
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_login">Sign in</string>
+    <string name="bware_title">Bware</string>
+    <string name="welcome_message"> "Sign up for free access to height and weight restriction information for over 10,000 bridges." </string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="legomackcontent">Lego Mack Image</string>
+    <string name="signupText">New User Sign Up</string>
+    <string name="loginText">Login</string>
+    <string name="title_activity_user_login">Log In</string>
+    <string name="emailTextfield">Email</string>
+    <string name="prompt_forgot_login">Forgot Your Password?</string>
+</resources>
