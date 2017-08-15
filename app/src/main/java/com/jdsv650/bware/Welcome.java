@@ -14,6 +14,12 @@ public class Welcome extends AppCompatActivity {
         this.startActivity(i);
     }
 
+    public void signupPressed(View view)
+    {
+        Intent i = new Intent(this, Signup.class);
+        this.startActivity(i);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

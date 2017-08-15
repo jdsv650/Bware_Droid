@@ -43,13 +43,14 @@
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/signupText"
-        android:background="@color/colorCadmiumOrange"
+        android:layout_below="@+id/loginButton"
+        android:layout_centerHorizontal="true"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:layout_marginTop="5dp"
-        android:layout_below="@+id/loginButton"
-        android:layout_centerHorizontal="true" />
+        android:background="@color/colorCadmiumOrange"
+        android:onClick="signupPressed"
+        android:text="@string/signupText" />
 
 
 </RelativeLayout>
