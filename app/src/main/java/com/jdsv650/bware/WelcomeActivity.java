@@ -3,20 +3,19 @@ package com.jdsv650.bware;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
-public class Welcome extends AppCompatActivity {
+public class WelcomeActivity extends AppCompatActivity {
 
     public void loginPressed(View view)
     {
-        Intent i = new Intent(this, Login.class);
+        Intent i = new Intent(this, LoginActivity.class);
         this.startActivity(i);
     }
 
     public void signupPressed(View view)
     {
-        Intent i = new Intent(this, Signup.class);
+        Intent i = new Intent(this, SignupActivity.class);
         this.startActivity(i);
     }
 
