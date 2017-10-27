@@ -43,8 +43,9 @@
         android:layout_centerVertical="true"
         android:layout_margin="20dp"
         android:background="@color/colorCadmiumOrange"
-        android:textColor="@color/colorBlack"
-        android:text="@string/loginText" />
+        android:onClick="loginPressed"
+        android:text="@string/loginText"
+        android:textColor="@color/colorBlack" />
 
     <Button
         android:id="@+id/registerButton"

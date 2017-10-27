@@ -11,7 +11,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState); 
+        super.onCreate(savedInstanceState);
 
         // get shared prefs
         SharedPreferences preferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
