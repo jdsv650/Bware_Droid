@@ -1,5 +1,6 @@
 package com.jdsv650.bware;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,6 +32,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import static com.jdsv650.bware.Constants.PREFS_NAME;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -112,15 +115,42 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (response.isSuccessful()){
                     try {
-                        JSONObject json = new JSONObject(mMessage);
-
+                        final JSONObject json = new JSONObject(mMessage);
 
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
 
-                                Toast.makeText(getBaseContext(), mMessage, Toast.LENGTH_LONG).show();
-                                //final String serverResponse = json.getString("");
+                                // Toast.makeText(getBaseContext(), mMessage, Toast.LENGTH_LONG).show();
+                                try {
+
+
+/***
+                                    String err = json.getString("error");
+
+                                    if (err == "invalid_grant")
+                                    {
+                                        Toast.makeText(getBaseContext(), "Please verify your email and password", Toast.LENGTH_SHORT).show();
+                                        return;  // don't try to get token info it failed so just exit
+                                    }  ****/
+
+                                    String accessToken = json.getString("access_token");
+                                    String expires = json.getString(".expires");
+                                    String username = json.getString("userName");
+
+                                    // get shared prefs
+                                    SharedPreferences preferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+
+                                    // save the fields to shared prefs
+                                    preferences.edit().putString("access_token", accessToken).apply();
+                                    preferences.edit().putString(".expires", expires).apply();
+                                    preferences.edit().putString("userName", username).apply();
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    Toast.makeText(getBaseContext(), "Error logging in please try again", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
 
@@ -129,7 +159,33 @@ public class LoginActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
+                } // end response success
+                else   // unsuccessful response
+                {
+                    if (response.code() == 400) // received a response from server
+                    {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                Toast.makeText(getBaseContext(), "Please verify username and password", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                    else
+                    {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                Toast.makeText(getBaseContext(), "Network related error. Please try again", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    return;
                 }
+
             }
         });
 

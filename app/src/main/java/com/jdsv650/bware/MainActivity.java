@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -15,10 +16,19 @@ public class MainActivity extends AppCompatActivity {
 
         // get shared prefs
         SharedPreferences preferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
-        String token = preferences.getString("token","");
+
+        /*
+          preferences.edit().putString("access_token", accessToken).apply();
+                                    preferences.edit().putString(".expires", expires).apply();
+                                    preferences.edit().putString("userName", username).apply();
+         */
+
+        String token = preferences.getString("access_token","");  // is token stored
 
         // NO call to setContentView just start activity based on if we have a stored token
         Intent intent;
+
+        Log.i("TOKEN", token);
 
         if (token == "") { intent = new Intent(this, WelcomeActivity.class); }
         else { intent = new Intent(this, MapsActivity.class); }
