@@ -1,5 +1,6 @@
 package com.jdsv650.bware;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -124,8 +125,7 @@ public class LoginActivity extends AppCompatActivity {
                                 // Toast.makeText(getBaseContext(), mMessage, Toast.LENGTH_LONG).show();
                                 try {
 
-
-/***
+                                    /***
                                     String err = json.getString("error");
 
                                     if (err == "invalid_grant")
@@ -154,6 +154,9 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         });
 
+                        // go to map
+                        Intent intent = new Intent(getBaseContext(), MapsActivity.class);
+                        startActivity(intent);
 
                     } catch (Exception e){
                         e.printStackTrace();
