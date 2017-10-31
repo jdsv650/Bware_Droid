@@ -63,9 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         else
         {
-            //Toast.makeText(this, "try login", Toast.LENGTH_SHORT).show();
-
-            // supplied creds so try for token
+            // supplied credentials so try for token
            getToken();
         }
 
@@ -84,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         String reqBody = "grant_type=password&username=" + emailText.getText().toString()
                         + "&password=" + passwordText.getText().toString() ;
 
-        //grant_type=password&username=jdsv650%40yahoo.com&password=******";
+        //grant_type=password&username=jds%40gmail.com&password=******";
 
         final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
         String urlEncoded = Uri.encode(reqBody, ALLOWED_URI_CHARS);
@@ -112,7 +110,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 final String mMessage = response.body().string();
                 Log.w("success Response", mMessage);
-
 
                 if (response.isSuccessful()){
                     try {
@@ -195,11 +192,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    /****** SSL bypass /*
-     * This is very bad practice and should NOT be used in production.
-     */
-
-
+    /** SSL bypass **/
     private static final TrustManager[] trustAllCerts = new TrustManager[] {
             new X509TrustManager() {
                 @Override
