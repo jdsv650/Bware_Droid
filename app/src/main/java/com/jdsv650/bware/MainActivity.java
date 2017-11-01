@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("TOKEN", token);
 
         if (token == "") { intent = new Intent(this, WelcomeActivity.class); }
-        else { intent = new Intent(this, MapsActivity.class); }
+        else { intent = new Intent(this, BottomNavigationActivity.class); }
 
         startActivity(intent);
         finish();
