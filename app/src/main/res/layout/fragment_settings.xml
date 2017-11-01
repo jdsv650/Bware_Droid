@@ -6,8 +6,11 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/usernameID"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Settings Fragment" />
+        android:layout_height="wrap_content"
+        android:text=""
+        android:gravity="center"
+        android:padding="10dp" />
 
 </FrameLayout>
