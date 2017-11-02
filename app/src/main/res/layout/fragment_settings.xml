@@ -4,7 +4,10 @@
     android:layout_height="match_parent"
     tools:context="com.jdsv650.bware.SettingsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/usernameID"
         android:layout_width="match_parent"
@@ -12,5 +15,13 @@
         android:text=""
         android:gravity="center"
         android:padding="10dp" />
+
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Logout" />
+
+    </LinearLayout>
 
 </FrameLayout>

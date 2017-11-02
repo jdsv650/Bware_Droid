@@ -152,7 +152,7 @@ public class LoginActivity extends AppCompatActivity {
                         });
 
                         // go to map
-                        Intent intent = new Intent(getBaseContext(), MapsActivity.class);
+                        Intent intent = new Intent(getBaseContext(), BottomNavigationActivity.class);
                         startActivity(intent);
 
                     } catch (Exception e){
