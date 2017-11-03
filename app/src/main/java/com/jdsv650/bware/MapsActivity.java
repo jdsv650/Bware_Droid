@@ -115,8 +115,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mLocationPermissionGranted = true;
 
 
-
-
                 } else {
 
                     Toast.makeText(this,"", Toast.LENGTH_LONG).show();
