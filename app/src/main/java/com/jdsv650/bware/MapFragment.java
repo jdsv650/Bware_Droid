@@ -39,6 +39,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -64,56 +65,62 @@ import static com.jdsv650.bware.Constants.PREFS_NAME;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapFragment extends Fragment implements LocationListener {
+public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback {
 
     MapFragment mMapFragment;
 
     private GoogleMap gMap;
     MapView mMapView;
+    View mView;
     public static final int REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted = false;
     LocationManager locManager;
     private static final Integer fiveMilesInMeters = 8047;
-    private static final Integer sixtSeconds = 60000;
+    private static final Integer sixtySeconds = 60000;
+    private static final Integer zoom = 10;
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
-
-
+    
     Double geographicCenterUSLat = 39.833333;
     Double geographicCenterUSLon = -98.583333;
     Integer numMilesToSearch = 50;  // can be changed by preference
 
-    OkHttpClient client = new OkHttpClient();
+    OkHttpClient client;
 
 
 
     public MapFragment() {
         // Required empty public constructor
+
+        client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS) // defaults 10 seconds - not enough if
+                .writeTimeout(30, TimeUnit.SECONDS)   // api hasn't been hit recently
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
+
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-       // SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager()
-               //.findFragmentById(R.id.map);
-        //mapFragment.getMapAsync(this);
-
-       // OkHttpClient client = new OkHttpClient();
+        MapsInitializer.initialize(getActivity().getApplicationContext());
 
     }
 
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_map, container, false);
+        mView = inflater.inflate(R.layout.fragment_map, container, false);
 
-        mMapView = (MapView) rootView.findViewById(R.id.mapView);
-
-
+        mMapView = (MapView) mView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
-
-       mMapView.onResume(); // needed to get the map to display immediately
+        mMapView.onResume(); // needed to get the map to display immediately
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -121,42 +128,30 @@ public class MapFragment extends Fragment implements LocationListener {
             e.printStackTrace();
         }
 
+        mMapView.getMapAsync(this);
 
+        /***
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap mMap) {
-                gMap = mMap;
 
-                // get location
-                locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                getLocationPermission();
-
-                // For showing a move to my location button
-               // googleMap.setMyLocationEnabled(true);
-
-                // For dropping a marker at a point on the Map
-                LatLng sydney = new LatLng(43.171395, -78.679584);
-                gMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
-
-                // For zooming automatically to the location of the marker
-                CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-                gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                updateLocationUI(43.171395, -78.679584);
             }
-        });
+        });  ***/
 
-
-        return rootView;
+        return mView;
     }
 
 
     @Override
     public void onLocationChanged(Location location) {
 
+        if (gMap == null)
+        {
+            return;
+        }
        // Toast.makeText(getActivity(), "Location: Lat = " + location.getLatitude() + "  Lon = " + location.getLongitude(), Toast.LENGTH_SHORT).show();
         updateLocationUI(location.getLatitude(), location.getLongitude());
-        getBridgeData(50);
+        getBridgeData(location, 50);
 
     }
 
@@ -180,28 +175,7 @@ public class MapFragment extends Fragment implements LocationListener {
 
     }
 
-    /***
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
 
-        gMap = googleMap;
-
-        // get location
-        locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        getLocationPermission();
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(43, -112);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
-        //mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        //mMap.getUiSettings().setZoomControlsEnabled(true);
-
-        updateLocationUI();
-
-    }
-***/
     private void getLocationPermission() {
     /*
      * Request location permission, so that we can get the location of the
@@ -212,8 +186,11 @@ public class MapFragment extends Fragment implements LocationListener {
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, fiveMilesInMeters, this);
-            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, fiveMilesInMeters, this);
+
+            Integer minute = 1000 * 60;
+
+            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, this);
+            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 0 , this);
 
         } else {
             ActivityCompat.requestPermissions(getActivity(),
@@ -255,13 +232,14 @@ public class MapFragment extends Fragment implements LocationListener {
         if (gMap == null) {
             return;
         }
+
         try {
 
             if (mLocationPermissionGranted == true) {
                 gMap.setMyLocationEnabled(true);
                 gMap.getUiSettings().setMyLocationButtonEnabled(true);
-                gMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Marker in Lockport"));
-                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 14)); // 14094
+                gMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Marker in ????" ));
+                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), zoom));
 
             } else {
                 gMap.setMyLocationEnabled(false);
@@ -273,9 +251,24 @@ public class MapFragment extends Fragment implements LocationListener {
         }
     }
 
-    private void getBridgeData(Integer miles)
+    private void getBridgeData(Location location, Integer miles)
     {
-        String urlAsString = Constants.baseUrlAsString + "/api/Bridge/GetByMiles?lat=43.112615&lon=-78.795&miles=50";
+
+         getActivity().runOnUiThread(new Runnable() {
+        @Override
+         public void run() {
+
+        LatLng sydney2 = new LatLng(43.0979, -78.7832);
+        gMap.addMarker(new MarkerOptions().position(sydney2).title("Marker Title").snippet("Marker Description"));
+
+        }
+        });
+
+        Double lat = location.getLatitude();
+        Double lon = location.getLongitude();
+
+        String urlAsString = "https://www.bwaremap.com" + "/api/Bridge/GetByMiles?lat=" + lat
+                                + "&lon=" +lon + "&miles=" +miles;
 
         // get shared prefs
         SharedPreferences preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
@@ -286,13 +279,15 @@ public class MapFragment extends Fragment implements LocationListener {
             String urlEncoded = Uri.encode(urlAsString);
             RequestBody body = RequestBody.create(MEDIA_TYPE, urlEncoded);
 
-
             Request request = new Request.Builder()
                     .url(urlAsString)
                     .addHeader("Authorization", "Bearer " + token)
                     .build();
 
-            client.newCall(request).enqueue(new Callback() {
+            OkHttpClient trustAllclient = trustAllSslClient(client);
+
+
+            trustAllclient.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     String mMessage = e.getMessage().toString();
@@ -315,24 +310,9 @@ public class MapFragment extends Fragment implements LocationListener {
                                 @Override
                                 public void run() {
 
-                                    // Toast.makeText(getBaseContext(), mMessage, Toast.LENGTH_LONG).show();
-                                    try {
-
+                                    try
+                                    {
                                         drawMap(jsonArray);
-
-                                        /***
-                                         String err = json.getString("error");
-
-                                         if (err == "invalid_grant")
-                                         {
-                                         Toast.makeText(getBaseContext(), "Please verify your email and password", Toast.LENGTH_SHORT).show();
-                                         return;  // don't try to get token info it failed so just exit
-                                         }  ****/
-
-                                       // String accessToken = json.getString("access_token");
-                                       // String expires = json.getString(".expires");
-                                       // String username = json.getString("userName");
-
                                     }
                                     catch (Exception ex)
                                     {
@@ -341,9 +321,9 @@ public class MapFragment extends Fragment implements LocationListener {
                                 }
                             });
 
-                            // go to map
-                            Intent intent = new Intent(getActivity(), BottomNavigationActivity.class);
-                            startActivity(intent);
+                            // go to map -- THIS IS THE ROOT OF ALL EVIL ----- why was it here to begin with ?????
+                           // Intent intent = new Intent(getActivity(), BottomNavigationActivity.class);
+                           // startActivity(intent);
 
                         } catch (Exception e){
                             e.printStackTrace();
@@ -379,67 +359,43 @@ public class MapFragment extends Fragment implements LocationListener {
                 }
             });
 
-
-            /****
-            FormBody.Builder formBuilder = new FormBody.Builder()
-                    .add("key", "123");
-
-            formBuilder.add("phone", "000000");
-
-            RequestBody formBody = formBuilder.build();
-
-            String urlEncoded = Uri.encode(urlAsString);
-            //RequestBody body = RequestBody.create(MEDIA_TYPE, urlEncoded);
-
-            Request request = new Request.Builder()
-                    .url(urlEncoded).post(formBody)
-                    .addHeader("Authorization", "Bearer " + token)
-                    .build();
-
-             ***/
-
-
-            /****
-             *  String reqBody = "grant_type=password&username=" + emailText.getText().toString()
-             + "&password=" + passwordText.getText().toString() ;
-
-             //grant_type=password&username=jds%40gmail.com&password=******";
-
-             final String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
-             String urlEncoded = Uri.encode(reqBody, ALLOWED_URI_CHARS);
-
-             RequestBody body = RequestBody.create(MEDIA_TYPE, urlEncoded);
-
-             final Request request = new Request.Builder()
-             .url(urlAsString)
-             .post(body)
-             .addHeader("Content-Type", "application/json")
-             .build();
-
-             */
         }
         else  // no token found
         {
             getActivity().finish(); // logout
         }
 
-
     }
 
 
     private void drawMap(JSONArray json)
     {
-        for (Integer i = 0; i < json.length(); i++)
-        {
+        gMap.clear();
+
+        for (Integer i = 0; i < json.length(); i++) {
             try {
-                Double lat = json.getJSONObject(i).getDouble("Latitude");
+                final Double lat = json.getJSONObject(i).getDouble("Latitude");
                 Log.i("JSON = ", lat.toString());
 
-                Double lon = json.getJSONObject(i).getDouble("Longitude");
+                final Double lon = json.getJSONObject(i).getDouble("Longitude");
                 Log.i("JSON = ", lon.toString());
 
-               gMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon))); //.title("Marker in Lockport"));
+                if (lat < -90 || lat > 90) { continue; }
+                if (lon < -180 || lon > 180) { continue; }
 
+                /***
+                 *  let height = b["Height"] as? Double
+                 if height != nil
+                 {
+                 marker.icon = UIImage(named: "marker_height2_orange.png")
+                 }
+                 else
+                 {
+                 marker.icon = UIImage(named: "marker_weight2_orange.png")
+                 }
+                 */
+
+                gMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Marker in Lockport ?????"));
 
 
             }
@@ -448,56 +404,9 @@ public class MapFragment extends Fragment implements LocationListener {
 
             }
 
-
         }
 
-
-
-
-
-        /*
-         func drawMap(result: AnyObject)
-    {
-        mapView.clear()
-
-        let resultAsArray = result as! NSArray
-
-        print("num bridges = \(resultAsArray.count)")
-
-        for bridge in resultAsArray
-        {
-            let b = bridge as! [String:AnyObject]
-
-            let bridgeLat = b["Latitude"] as? Double
-            let bridgeLon = b["Longitude"] as? Double
-
-            print("lat = \(String(describing: bridgeLat))")
-
-            // if lat pr lon invalid don't try to display it
-            if bridgeLat == nil || bridgeLon == nil { continue }
-            if bridgeLat! < -90 || bridgeLat! > 90 { continue }
-            if bridgeLon! < -180 || bridgeLon! > 180 { continue }
-
-            let marker = GMSMarker()
-            marker.position = CLLocationCoordinate2DMake(bridgeLat!, bridgeLon!)
-
-            let height = b["Height"] as? Double
-            if height != nil
-            {
-                marker.icon = UIImage(named: "marker_height2_orange.png")
-            }
-            else
-            {
-                marker.icon = UIImage(named: "marker_weight2_orange.png")
-            }
-
-             marker.map = mapView
-        }
     }
-         */
-    }
-
-
 
 
     /** SSL bypass **/
@@ -539,6 +448,34 @@ public class MapFragment extends Fragment implements LocationListener {
             }
         });
         return builder.build();
+    }
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        if (gMap == null)
+        {
+            gMap = googleMap;
+        }
+
+        // get location
+        locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        getLocationPermission();
+
+        // For showing a move to my location button
+        //gMap.setMyLocationEnabled(true);
+
+        // For dropping a marker at a point on the Map
+        LatLng sydney = new LatLng(43.171395, -78.679584);
+        gMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
+
+        // For zooming automatically to the location of the marker
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(zoom).build();
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        updateLocationUI(43.171395, -78.679584);
+
     }
 
 
