@@ -78,8 +78,11 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     private static final Integer fiveMilesInMeters = 8047;
     private static final Integer sixtySeconds = 60000;
     private static final Integer zoom = 10;
+    private SharedPreferences preferences;
+
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
-    
+
+
     Double geographicCenterUSLat = 39.833333;
     Double geographicCenterUSLon = -98.583333;
     Integer numMilesToSearch = 50;  // can be changed by preference
@@ -97,6 +100,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 .readTimeout(30, TimeUnit.SECONDS)
                 .build();
 
+
     }
 
     @Override
@@ -104,6 +108,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         super.onCreate(savedInstanceState);
 
         MapsInitializer.initialize(getActivity().getApplicationContext());
+
+        // get shared prefs
+        preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
 
     }
 
@@ -254,24 +261,13 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     private void getBridgeData(Location location, Integer miles)
     {
 
-         getActivity().runOnUiThread(new Runnable() {
-        @Override
-         public void run() {
-
-        LatLng sydney2 = new LatLng(43.0979, -78.7832);
-        gMap.addMarker(new MarkerOptions().position(sydney2).title("Marker Title").snippet("Marker Description"));
-
-        }
-        });
-
         Double lat = location.getLatitude();
         Double lon = location.getLongitude();
 
         String urlAsString = "https://www.bwaremap.com" + "/api/Bridge/GetByMiles?lat=" + lat
                                 + "&lon=" +lon + "&miles=" +miles;
 
-        // get shared prefs
-        SharedPreferences preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+
         String token = preferences.getString("access_token","");  // is token stored
 
         if (token != "")
