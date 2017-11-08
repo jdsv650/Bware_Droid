@@ -10,9 +10,9 @@ import okhttp3.OkHttpClient;
 public class Constants {
 
 
-    public static final String baseUrlAsString = "http://www.bwaremap.com";
+    public static final String baseUrlAsString = "https://www.bwaremap.com";
     public static final String siteName = "";  //"/Bware"
     public static final String PREFS_NAME = "PREFS";
-
+    public static final Integer timeout = 50;
 
 }

@@ -97,9 +97,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         // Required empty public constructor
 
         client = new OkHttpClient.Builder()
-                .connectTimeout(40, TimeUnit.SECONDS) // defaults 10 seconds - not enough if
-                .writeTimeout(40, TimeUnit.SECONDS)   // api hasn't been hit recently
-                .readTimeout(40, TimeUnit.SECONDS)
+                .connectTimeout(Constants.timeout, TimeUnit.SECONDS) // defaults 10 seconds - not enough if
+                .writeTimeout(Constants.timeout, TimeUnit.SECONDS)   // api hasn't been hit recently
+                .readTimeout(Constants.timeout, TimeUnit.SECONDS)
                 .build();
 
 
@@ -266,7 +266,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         Double lat = location.getLatitude();
         Double lon = location.getLongitude();
 
-        String urlAsString = "https://www.bwaremap.com" + "/api/Bridge/GetByMiles?lat=" + lat
+        String urlAsString = Constants.baseUrlAsString + "/api/Bridge/GetByMiles?lat=" + lat
                                 + "&lon=" +lon + "&miles=" +miles;
 
 
