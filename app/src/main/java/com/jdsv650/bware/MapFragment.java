@@ -29,6 +29,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -65,7 +66,8 @@ import static com.jdsv650.bware.Constants.PREFS_NAME;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback {
+
+public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
     MapFragment mMapFragment;
 
@@ -95,9 +97,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         // Required empty public constructor
 
         client = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS) // defaults 10 seconds - not enough if
-                .writeTimeout(30, TimeUnit.SECONDS)   // api hasn't been hit recently
-                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(40, TimeUnit.SECONDS) // defaults 10 seconds - not enough if
+                .writeTimeout(40, TimeUnit.SECONDS)   // api hasn't been hit recently
+                .readTimeout(40, TimeUnit.SECONDS)
                 .build();
 
 
@@ -280,7 +282,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                     .addHeader("Authorization", "Bearer " + token)
                     .build();
 
-            OkHttpClient trustAllclient = trustAllSslClient(client);
+            OkHttpClient trustAllclient = Helper.trustAllSslClient(client);
 
 
             trustAllclient.newCall(request).enqueue(new Callback() {
@@ -405,46 +407,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     }
 
 
-    /** SSL bypass **/
-    private static final TrustManager[] trustAllCerts = new TrustManager[] {
-            new X509TrustManager() {
-                @Override
-                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                }
 
-                @Override
-                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                }
-
-                @Override
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return new java.security.cert.X509Certificate[]{};
-                }
-            }
-    };
-    private static final SSLContext trustAllSslContext;
-    static {
-        try {
-            trustAllSslContext = SSLContext.getInstance("SSL");
-            trustAllSslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private static final SSLSocketFactory trustAllSslSocketFactory = trustAllSslContext.getSocketFactory();
-
-    public static OkHttpClient trustAllSslClient(OkHttpClient client) {
-
-        OkHttpClient.Builder builder = client.newBuilder();
-        builder.sslSocketFactory(trustAllSslSocketFactory, (X509TrustManager)trustAllCerts[0]);
-        builder.hostnameVerifier(new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        });
-        return builder.build();
-    }
 
 
     @Override
@@ -454,6 +417,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         {
             gMap = googleMap;
         }
+
+       // gMap.setOnMapClickListener(this);
+        gMap.setOnMarkerClickListener(this);
 
         // get location
         locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -475,4 +441,20 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     }
 
 
+    @Override
+    public void onMapClick(LatLng latLng) {
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        Intent i = new Intent(getActivity(), DetailActivity.class);
+        i.putExtra("latitude", marker.getPosition().latitude);
+        i.putExtra("longitude", marker.getPosition().longitude);
+
+        startActivity(i);
+
+        return true;
+    }
 }
