@@ -6,7 +6,11 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -40,6 +44,8 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         client = new OkHttpClient.Builder()
                 .connectTimeout(Constants.timeout, TimeUnit.SECONDS) // defaults 10 seconds - not enough if
@@ -107,19 +113,25 @@ public class DetailActivity extends AppCompatActivity {
 
                                     try
                                     {
-                                        theBridge.country = json.getString("Country");
-                                        theBridge.city = json.getString("Township");  // city
-                                        theBridge.state = json.getString("State");
-                                        theBridge.county =  json.getString("County");
+                                        theBridge.country = json.optString("Country");
+                                        theBridge.city = json.optString("Township");  // city
+                                        theBridge.state = json.optString("State");
+                                        theBridge.county =  json.optString("County");
 
-                                        theBridge.locationDescription = json.getString("LocationDescription");
-                                        theBridge.featureCarried = json.getString("FeatureCarried");
-                                        theBridge.featureCrossed = json.getString("FeatureCrossed");
+                                        theBridge.locationDescription = json.optString("LocationDescription");
+                                        theBridge.featureCarried = json.optString("FeatureCarried");
+                                        theBridge.featureCrossed = json.optString("FeatureCrossed");
+                                        theBridge.zip = json.optString("Zip");
 
                                         EditText countryET = (EditText) findViewById(R.id.countryEditText);
                                         EditText cityET = (EditText) findViewById(R.id.cityEditText);
                                         EditText stateET = (EditText) findViewById(R.id.stateEditText);
                                         EditText countyET = (EditText) findViewById(R.id.countyEditText);
+
+                                        EditText locationET = (EditText) findViewById(R.id.descriptionEditText);
+                                        EditText carriedET = (EditText) findViewById(R.id.carriedEditText);
+                                        EditText crossedET = (EditText) findViewById(R.id.crossedEditText);
+                                        EditText zipET = (EditText) findViewById(R.id.zipEditText);
 
                                         setEditTextAsTextView(countryET);
                                         countryET.setText(theBridge.country);
@@ -132,6 +144,67 @@ public class DetailActivity extends AppCompatActivity {
 
                                         setEditTextAsTextView(countyET);
                                         countyET.setText(theBridge.county);
+
+                                        setEditTextAsTextView(locationET);
+                                        locationET.setText(theBridge.locationDescription);
+
+                                        setEditTextAsTextView(carriedET);
+                                        carriedET.setText(theBridge.featureCarried);
+
+                                        setEditTextAsTextView(crossedET);
+                                        crossedET.setText(theBridge.featureCrossed);
+
+                                        setEditTextAsTextView(zipET);
+                                        zipET.setText(theBridge.zip);
+
+                                        /*** Restricted ***/
+
+                                        theBridge.weightStraight = json.optDouble("WeightStraight", -99.0);
+                                        theBridge.weightStraight_TriAxle = json.optDouble("WeightStraight_TriAxle", -99.0);
+                                        theBridge.weightCombo = json.optDouble("WeightCombination", -99.0);
+                                        theBridge.weightDouble = json.optDouble("WeightDouble", -99.0);
+
+                                        theBridge.height = json.optDouble("Height",-99.0);
+                                        theBridge.otherPosting = json.optString("OtherPosting");
+                                        theBridge.isRPosted = json.optBoolean( "isRposted");
+
+                                        EditText straightET = (EditText) findViewById(R.id.tandemEditText);
+                                        EditText triET = (EditText) findViewById(R.id.triaxleEditText);
+                                        EditText comboET = (EditText) findViewById(R.id.combinationEditText);
+                                        EditText doubleET = (EditText) findViewById(R.id.doubleEditText);
+
+                                        EditText heightET = (EditText) findViewById(R.id.heightEditText);
+                                        EditText otherET = (EditText) findViewById(R.id.otherEditText);
+                                        Switch isRET = (Switch) findViewById(R.id.rSwitch);
+
+                                        setEditTextAsTextView(straightET);
+                                        if (theBridge.weightStraight != -99) {
+                                            straightET.setText(theBridge.weightStraight.toString());
+                                        }
+
+                                        setEditTextAsTextView(triET);
+                                        if (theBridge.weightStraight_TriAxle != -99) {
+                                            triET.setText(theBridge.weightStraight_TriAxle.toString());
+                                        }
+
+                                        setEditTextAsTextView(comboET);
+                                        if (theBridge.weightCombo != -99) {
+                                            comboET.setText(theBridge.weightCombo.toString());
+                                        }
+
+                                        setEditTextAsTextView(doubleET);
+                                        if (theBridge.weightDouble != -99) {
+                                            doubleET.setText(theBridge.weightDouble.toString());
+                                        }
+
+                                        setEditTextAsTextView(heightET);
+                                        if (theBridge.height != -99) { heightET.setText(theBridge.height.toString()); }
+
+                                        setEditTextAsTextView(otherET);
+
+                                        otherET.setText(theBridge.otherPosting);
+                                        isRET.setChecked(theBridge.isRPosted);
+                                        isRET.setEnabled(false);
 
 
                                         /***
@@ -327,7 +400,14 @@ public class DetailActivity extends AppCompatActivity {
         et.setFocusable(false);
         et.setSelected(false);
         et.setKeyListener(null);
+        et.setOnTouchListener(otl);
         //et.setBackgroundResource(android.R.color.transparent);
     }
+
+    private View.OnTouchListener otl = new View.OnTouchListener() {
+        public boolean onTouch (View v, MotionEvent event) {
+            return true;
+        }
+    };
 
 }
