@@ -27,6 +27,8 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -36,22 +38,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -172,8 +162,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     @Override
     public void onProviderEnabled(String provider) {
 
-        Toast.makeText(getActivity(), "Getting updates ...", Toast.LENGTH_SHORT).show();
-
+       // Toast.makeText(getActivity(), "Getting updates ...", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -247,7 +236,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             if (mLocationPermissionGranted == true) {
                 gMap.setMyLocationEnabled(true);
                 gMap.getUiSettings().setMyLocationButtonEnabled(true);
-                gMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Marker in ????" ));
                 gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), zoom));
 
             } else {
@@ -284,13 +272,11 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
             OkHttpClient trustAllclient = Helper.trustAllSslClient(client);
 
-
             trustAllclient.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     String mMessage = e.getMessage().toString();
                     Log.w("failure Response", mMessage);
-                    //call.cancel();
                 }
 
                 @Override
@@ -318,10 +304,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                                     }
                                 }
                             });
-
-                            // go to map -- THIS IS THE ROOT OF ALL EVIL ----- why was it here to begin with ?????
-                           // Intent intent = new Intent(getActivity(), BottomNavigationActivity.class);
-                           // startActivity(intent);
 
                         } catch (Exception e){
                             e.printStackTrace();
@@ -381,20 +363,20 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 if (lat < -90 || lat > 90) { continue; }
                 if (lon < -180 || lon > 180) { continue; }
 
-                /***
-                 *  let height = b["Height"] as? Double
-                 if height != nil
-                 {
-                 marker.icon = UIImage(named: "marker_height2_orange.png")
-                 }
-                 else
-                 {
-                 marker.icon = UIImage(named: "marker_weight2_orange.png")
-                 }
-                 */
+                Double height;
+                height = json.getJSONObject(i).optDouble("Height", -99.0);
+                BitmapDescriptor bmpDesc;
 
-                gMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title("Marker in Lockport ?????"));
+                if (height == -99.0) // No height restriction found
+                {
+                    bmpDesc = BitmapDescriptorFactory.fromResource(R.drawable.marker_bridge_orange);
+                }
+                else
+                {
+                    bmpDesc = BitmapDescriptorFactory.fromResource(R.drawable.marker_height_orange);
+                }
 
+                gMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).icon(bmpDesc));
 
             }
             catch (Exception ex)
@@ -405,8 +387,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         }
 
     }
-
-
 
 
 
@@ -425,18 +405,14 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         getLocationPermission();
 
-        // For showing a move to my location button
-        //gMap.setMyLocationEnabled(true);
-
         // For dropping a marker at a point on the Map
-        LatLng sydney = new LatLng(43.171395, -78.679584);
-        gMap.addMarker(new MarkerOptions().position(sydney).title("Marker Title").snippet("Marker Description"));
+        LatLng sydney = new LatLng(geographicCenterUSLat, geographicCenterUSLon);
 
         // For zooming automatically to the location of the marker
         CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(zoom).build();
         gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        updateLocationUI(43.171395, -78.679584);
+        updateLocationUI(geographicCenterUSLat, geographicCenterUSLon);
 
     }
 
