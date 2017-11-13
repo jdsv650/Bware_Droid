@@ -38,7 +38,7 @@
         android:textSize="20sp" />
 
     <EditText
-        android:id="@+id/editText4"
+        android:id="@+id/passwordConfirmEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -57,11 +57,12 @@
         android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/editText4"
+        android:layout_below="@+id/passwordConfirmEditText"
         android:layout_centerHorizontal="true"
-        android:text="@string/sign_up_text"
+        android:layout_margin="20dp"
         android:background="@color/colorCadmiumOrange"
-        android:textColor="@color/colorBlack"
-        android:layout_margin="20dp" />
+        android:onClick="signupPressed"
+        android:text="@string/sign_up_text"
+        android:textColor="@color/colorBlack" />
 
 </RelativeLayout>

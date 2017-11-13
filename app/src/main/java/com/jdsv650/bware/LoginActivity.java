@@ -18,6 +18,7 @@ import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -41,12 +42,19 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText emailText;
     EditText passwordText;
-    final OkHttpClient client = new OkHttpClient();
+    OkHttpClient client = new OkHttpClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        client = new OkHttpClient.Builder()
+                .connectTimeout(Constants.timeout, TimeUnit.SECONDS) // defaults 10 seconds - not enough if
+                .writeTimeout(Constants.timeout, TimeUnit.SECONDS)   // api hasn't been hit recently
+                .readTimeout(Constants.timeout, TimeUnit.SECONDS)
+                .build();
+
     }
 
 
