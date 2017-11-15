@@ -1,5 +1,6 @@
 package com.jdsv650.bware;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -37,7 +38,7 @@ import okhttp3.Response;
 
 import static com.jdsv650.bware.Constants.PREFS_NAME;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements ResetPasswordFragment.ResetPasswordDialogListener {
 
 
     EditText emailText;
@@ -57,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-
     public void loginPressed(View view)
     {
         emailText = (EditText) findViewById(R.id.emailEditText);
@@ -75,6 +75,11 @@ public class LoginActivity extends AppCompatActivity {
            getToken();
         }
 
+    }
+
+    public void forgotPressed(View view)
+    {
+        resetPassword();
     }
 
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
@@ -200,4 +205,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    public void resetPassword()
+    {
+        showResetPasswordDialog();
+
+    }
+
+
+    private void showResetPasswordDialog() {
+
+        FragmentManager fm = getFragmentManager();
+
+        ResetPasswordFragment resetDialog = new ResetPasswordFragment();
+        //dialog = resetDialog;
+        resetDialog.show(fm, "Reset Password");
+    }
+
+    // callback from resetpassword dialog with email
+    @Override
+    public void onFinishResetPasswordDialog(String email) {
+
+        
+
+    }
 }

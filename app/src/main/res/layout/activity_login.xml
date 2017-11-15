@@ -48,11 +48,12 @@
         android:textColor="@color/colorBlack" />
 
     <Button
-        android:id="@+id/registerButton"
+        android:id="@+id/forgotButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/loginButton"
         android:layout_centerHorizontal="true"
+        android:onClick="forgotPressed"
         android:text="@string/prompt_forgot_login"
         android:textColor="@color/colorCadmiumOrange"
         style="?android:attr/borderlessButtonStyle" />
