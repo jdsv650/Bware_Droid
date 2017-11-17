@@ -202,6 +202,8 @@
             android:textColor="@color/colorCadmiumOrange"
             android:textSize="20sp" />
 
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -238,16 +240,16 @@
                 android:id="@+id/cityTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
                 android:padding="10dp"
-                android:text="City       "
+                android:text="City          "
                 android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/cityEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
                 android:background="@color/colorWhite"
@@ -264,10 +266,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
                 android:padding="10dp"
-                android:text="State    "
+                android:text="State       "
                 android:textSize="16sp" />
 
             <EditText
@@ -275,11 +277,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@color/colorWhite"
-                android:ems="10"
                 android:inputType="text"
                 android:padding="10dp" />
         </LinearLayout>
@@ -293,9 +292,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
                 android:padding="10dp"
-                android:text="County        "
+                android:text="County     "
                 android:textSize="16sp" />
 
             <EditText
@@ -303,11 +303,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@color/colorWhite"
-                android:ems="10"
                 android:inputType="text"
                 android:padding="10dp" />
 
@@ -321,75 +318,21 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
             android:padding="10dp"
-            android:text="Description"
+            android:text="Description  "
             android:textSize="16sp" />
 
         <EditText
             android:id="@+id/descriptionEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
             android:background="@color/colorWhite"
-            android:ems="10"
             android:inputType="text"
-            android:padding="10dp"
-            android:layout_marginEnd="10dp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="Carried  "
-            android:textSize="16sp" />
-        <EditText
-            android:id="@+id/carriedEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorWhite"
-            android:ems="10"
-            android:inputType="text"
-            android:padding="10dp"
-            android:layout_marginEnd="10dp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="Crossed"
-            android:textSize="16sp" />
-        <EditText
-            android:id="@+id/crossedEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorWhite"
-            android:ems="10"
-            android:inputType="text"
-            android:padding="10dp"
-            android:layout_marginEnd="10dp"/>
+            android:padding="10dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -403,21 +346,65 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:padding="10dp"
+            android:text="Carried          "
+            android:textSize="16sp" />
+        <EditText
+            android:id="@+id/carriedEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/colorWhite"
+            android:inputType="text"
+            android:padding="10dp"/>
+    </LinearLayout>
 
-            android:text="Zip         "
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:text="Crossed         "
+            android:textSize="16sp" />
+        <EditText
+            android:id="@+id/crossedEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/colorWhite"
+            android:inputType="text"
+            android:padding="10dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:text="Zip                  "
             android:textSize="16sp" />
         <EditText
             android:id="@+id/zipEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
             android:background="@color/colorWhite"
-            android:ems="10"
             android:inputType="text"
-            android:padding="10dp"
-            android:layout_marginEnd="10dp"/>
+            android:padding="10dp"/>
     </LinearLayout>
 
     </LinearLayout>
