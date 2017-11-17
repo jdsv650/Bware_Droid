@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -49,6 +51,9 @@ public class LoginActivity extends AppCompatActivity implements ResetPasswordFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Button forgot = (Button) findViewById(R.id.forgotButton);
+        forgot.setVisibility(View.INVISIBLE);
 
         client = new OkHttpClient.Builder()
                 .connectTimeout(Constants.timeout, TimeUnit.SECONDS) // defaults 10 seconds - not enough if
@@ -225,7 +230,104 @@ public class LoginActivity extends AppCompatActivity implements ResetPasswordFra
     @Override
     public void onFinishResetPasswordDialog(String email) {
 
-        
+        String urlAsString = Constants.baseUrlAsString + "/api/Account/ForgotPassword";
+
+        Log.w("email", email);
+
+        RequestBody formBody = new FormBody.Builder()
+                .add("email", email)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(urlAsString)
+                .addHeader("Content-Type", "application/json")
+                .post(formBody)
+                .build();
+
+        OkHttpClient trustAllclient = Helper.trustAllSslClient(client);
+
+        trustAllclient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                String mMessage = e.getMessage().toString();
+                Log.w("failure Response", mMessage);
+                //call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+
+                final String mMessage = response.body().string();
+                Log.w("success Response", mMessage);
+
+                if (response.isSuccessful()){
+                    try {
+                        final JSONObject json = new JSONObject(mMessage);
+
+                        Boolean isSuccess = json.getBoolean("isSuccess");
+                        if (!isSuccess)
+                        {
+                            final String message = json.optString("message","Reset Password Failed. Please try again");
+
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                                    Log.i("TOAST", "isSuccess FALSE TOAST");
+                                }
+                            });
+
+                        }
+                        else // reset password call OK
+                        {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    Toast.makeText(LoginActivity.this, "Check your email and follow the link provided to reset your B*ware password\"", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+
+                    } catch (Exception e){
+                        e.printStackTrace();
+                        Toast.makeText(LoginActivity.this, "Reset Password Failed. Please try again", Toast.LENGTH_SHORT).show();
+                    }
+
+                } // end response success
+                else   // unsuccessful response
+                {
+                    if (response.code() == 400) // received a response from server
+                    {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                Toast.makeText(LoginActivity.this, "Please verify email", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                    else
+                    {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                Toast.makeText(LoginActivity.this, "Network related error. Please try again", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    return;
+                }
+
+            }
+        });
+
+
 
     }
 }
