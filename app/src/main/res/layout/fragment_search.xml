@@ -4,10 +4,82 @@
     android:layout_height="match_parent"
     tools:context="com.jdsv650.bware.SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello Search Fragment" />
+        android:layout_height="match_parent">
+
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/requiredTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Required"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textStyle="bold"/>
+
+        <EditText
+            android:id="@+id/searchCountryET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Country"
+            android:background="@color/colorWhite"
+            android:inputType="text"
+            android:padding="10dp"
+            android:layout_margin="10dp"/>
+
+        <EditText
+            android:id="@+id/searchStateET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="State/Province"
+            android:background="@color/colorWhite"
+            android:inputType="text"
+            android:padding="10dp"
+            android:layout_margin="10dp" />
+
+        <EditText
+            android:id="@+id/searchCountyET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="County"
+            android:background="@color/colorWhite"
+            android:inputType="text"
+            android:padding="10dp"
+            android:layout_margin="10dp" />
+
+        <TextView
+            android:id="@+id/optionalTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Optional"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/searchCityET"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="City/Town"
+            android:background="@color/colorWhite"
+            android:inputType="text"
+            android:padding="10dp"
+            android:layout_margin="10dp" />
+
+        <Button
+            android:id="@+id/searchSubmitPressed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@color/colorCadmiumOrange"
+            android:text="Submit" />
+
+    </LinearLayout>
+
+    </ScrollView>
 
 </FrameLayout>
