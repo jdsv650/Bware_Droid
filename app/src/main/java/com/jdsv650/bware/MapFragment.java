@@ -405,7 +405,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     }
 
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -436,7 +435,11 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     @Override
     public void onMapLongClick(LatLng latLng) {
 
-        Toast.makeText(getActivity(), "LONG CLICK", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(getActivity(), AddBridgeActivity.class);
+        i.putExtra("latitude", latLng.latitude);
+        i.putExtra("longitude", latLng.longitude);
+
+        startActivity(i);
 
     }
 
