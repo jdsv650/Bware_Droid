@@ -1,10 +1,14 @@
 package com.jdsv650.bware;
 
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +28,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
     public static final String PREFS_NAME = "PREFS";
 
-
+    AboutDialog dialog;
     TextView userNameEditText;
 
     public SettingsFragment() {
@@ -46,6 +50,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
         Button button = (Button) view.findViewById(R.id.logoutButton);
         button.setOnClickListener(this);
+
+        Button aboutButton = (Button) view.findViewById(R.id.about_button);
+        aboutButton.setOnClickListener(this);
 
         // Inflate the layout for this fragment
         return view;
@@ -88,9 +95,42 @@ public class SettingsFragment extends Fragment implements View.OnClickListener {
 
                 getActivity().finish();
 
-
             break;
+            case R.id.about_button:
+
+                showAboutDialog();
+
+                break;
         }
 
     }
+
+    // displays the add todo dialog
+    private void showAboutDialog() {
+
+        FragmentManager fm = getFragmentManager();
+
+        AboutDialog aboutDialog = new AboutDialog();
+        dialog = aboutDialog;
+
+        //aboutDialog.show(fm, "About");
+
+        AlertDialog.Builder alertDialogBuilder = null;
+        alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_about, null);
+        alertDialogBuilder.setView(view);
+        alertDialogBuilder.setTitle("About");
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int id)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        alertDialogBuilder.create();
+        alertDialogBuilder.show();
+    }
+
 }
