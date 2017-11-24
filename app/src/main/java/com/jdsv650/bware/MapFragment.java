@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -59,7 +60,7 @@ import static com.jdsv650.bware.Constants.PREFS_NAME;
  * A simple {@link Fragment} subclass.
  */
 
-public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback, GoogleMap.OnMapClickListener,
+public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
         GoogleMap.OnMarkerClickListener, BottomNavigationActivity.UpdatedBridgeListListener {
 
     MapFragment mMapFragment;
@@ -106,6 +107,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         // get shared prefs
         preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+
 
     }
 
@@ -412,8 +414,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
             gMap = googleMap;
         }
 
-       // gMap.setOnMapClickListener(this);
         gMap.setOnMarkerClickListener(this);
+        gMap.setOnMapLongClickListener(this);
 
         // get location
         locManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -432,7 +434,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
 
     @Override
-    public void onMapClick(LatLng latLng) {
+    public void onMapLongClick(LatLng latLng) {
+
+        Toast.makeText(getActivity(), "LONG CLICK", Toast.LENGTH_SHORT).show();
 
     }
 
