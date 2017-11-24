@@ -15,6 +15,11 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -151,10 +156,41 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                                     try
                                     {
-                                        Toast.makeText(getActivity(), "OK PARSE ME.....", Toast.LENGTH_SHORT).show();
+                                        BottomNavigationActivity navActivity = ((BottomNavigationActivity) getActivity());
+                                        navActivity.clearAllBridges();
 
+                                        for (Integer i = 0; i < jsonArray.length(); i++) {
+                                            try {
 
-                                        //theBridge.country = json.optString("Country");
+                                                Bridge b = new Bridge();
+
+                                                //theBridge.country = json.optString("Country");
+
+                                                final Double lat = jsonArray.getJSONObject(i).getDouble("Latitude");
+                                                Log.i("JSON = ", lat.toString());
+                                                b.latitude = lat;
+
+                                                final Double lon = jsonArray.getJSONObject(i).getDouble("Longitude");
+                                                Log.i("JSON = ", lon.toString());
+                                                b.longitude = lon;
+
+                                                if (lat < -90 || lat > 90) { continue; }
+                                                if (lon < -180 || lon > 180) { continue; }
+
+                                                Double height;
+                                                height = jsonArray.getJSONObject(i).optDouble("Height", -99.0);
+                                                b.height = height;
+
+                                                navActivity.addBridge(b);
+
+                                            }
+                                            catch (Exception ex)
+                                            {
+
+                                            }
+
+                                        }
+
 
                                         BottomNavigationView navigation = (BottomNavigationView) getActivity().findViewById(R.id.navigation);
                                         navigation.setSelectedItemId(R.id.navigation_home);
@@ -162,7 +198,11 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                                     }
                                     catch (Exception ex)
                                     {
-                                        Toast.makeText(getContext(), "Error retrieving bridge info - try again", Toast.LENGTH_SHORT).show();
+                                        // crash..... fix me
+
+                                              //  Toast.makeText(getContext(), "Error retrieving bridge info - try again", Toast.LENGTH_SHORT).show();
+
+
                                     }
                                 }
                             });

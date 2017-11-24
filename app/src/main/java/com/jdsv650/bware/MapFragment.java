@@ -33,11 +33,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.TileOverlay;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -57,7 +59,8 @@ import static com.jdsv650.bware.Constants.PREFS_NAME;
  * A simple {@link Fragment} subclass.
  */
 
-public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
+public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback, GoogleMap.OnMapClickListener,
+        GoogleMap.OnMarkerClickListener, BottomNavigationActivity.UpdatedBridgeListListener {
 
     MapFragment mMapFragment;
 
@@ -110,6 +113,17 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     @Override
     public void onResume() {
         super.onResume();
+
+        /***
+        if (((BottomNavigationActivity) getActivity()).getSearch() == true)
+        {
+            Toast.makeText(getActivity(), "SEARCH IS TRUE", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(getActivity(), "SEARCH IS FALSE", Toast.LENGTH_SHORT).show();
+
+        } ****/
 
     }
 
@@ -433,4 +447,61 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         return true;
     }
+
+    @Override
+    public void onFinishUpdatingBridges(ArrayList<Bridge> bridges) {
+
+        //Toast.makeText(getActivity(), "FINISHED UPDATING BRIDGES CALLED", Toast.LENGTH_SHORT).show();
+
+        drawMapFromBridgeList(bridges);
+
+    }
+
+
+    private void drawMapFromBridgeList(ArrayList<Bridge> bridges)
+    {
+        gMap.clear();
+
+        for (Integer i = 0; i < bridges.size(); i++) {
+            try {
+                final Double lat = bridges.get(i).latitude;
+                Log.i("LAT = ", lat.toString());
+
+                final Double lon = bridges.get(i).longitude;
+                Log.i("LON = ", lon.toString());
+
+                if (lat < -90 || lat > 90) { continue; }
+                if (lon < -180 || lon > 180) { continue; }
+
+                if(i == 0) {  // set camera zoom off of one of the bridges
+                    LatLng cameraCenter = new LatLng(lat, lon);
+                    CameraPosition cameraPosition = new CameraPosition.Builder().target(cameraCenter).zoom(zoom).build();
+                    gMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                }
+
+                Double height = bridges.get(i).height;
+                BitmapDescriptor bmpDesc;
+
+                if (height == -99.0) // No height restriction found
+                {
+                    bmpDesc = BitmapDescriptorFactory.fromResource(R.drawable.marker_bridge_orange);
+                }
+                else
+                {
+                    bmpDesc = BitmapDescriptorFactory.fromResource(R.drawable.marker_height_orange);
+                }
+
+                gMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).icon(bmpDesc));
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
+
+    }
+
+
 }
