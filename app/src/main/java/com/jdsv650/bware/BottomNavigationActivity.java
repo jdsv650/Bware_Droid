@@ -7,12 +7,24 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BottomNavigationActivity extends AppCompatActivity {
+
 
     MapFragment mapFragment;
     SearchFragment searchFragment;
     SettingsFragment settingsFragment;
+    Boolean isSearch = false;
+
+    public MapFragment getMapFragment() {
+        return mapFragment;
+    }
+
+    public void setMapFragment(MapFragment mapFragment) {
+        this.mapFragment = mapFragment;
+    }
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -20,30 +32,35 @@ public class BottomNavigationActivity extends AppCompatActivity {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-            clearAllFragments();
-
-
             switch (item.getItemId()) {
                 case R.id.navigation_home:
 
+                    while (getSupportFragmentManager().getBackStackEntryCount() > 0) {   // pop back to map
+                        getSupportFragmentManager().popBackStackImmediate();
+                    }
 
-                        // add the fragment
-                        mapFragment = new MapFragment();
-                        // root_layout added in activity_main.xml -- add map fragment to it
-                        getSupportFragmentManager().beginTransaction().add(R.id.root_layout, mapFragment).commit();
+                    if (isSearch == true)
+                    {
+                        Toast.makeText(getBaseContext(), "Returning FROM SEARCH", Toast.LENGTH_LONG).show();
 
+                    }
+                    isSearch = false;
 
                     return true;
                 case R.id.navigation_search:
 
+                    isSearch = true;
                     searchFragment = new SearchFragment();
-                    getSupportFragmentManager().beginTransaction().add(R.id.root_layout, searchFragment).commit();
+
+                    getSupportFragmentManager().beginTransaction().add(R.id.root_layout, searchFragment).addToBackStack(null).commit();
 
                     return true;
                 case R.id.navigation_settings:
 
                     settingsFragment = new SettingsFragment();
-                    getSupportFragmentManager().beginTransaction().add(R.id.root_layout, settingsFragment).commit();
+                    getSupportFragmentManager().beginTransaction().add(R.id.root_layout, settingsFragment).addToBackStack(null).commit();
+
+                    isSearch = false;
 
                     return true;
             }
@@ -59,6 +76,10 @@ public class BottomNavigationActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("B*ware");
 
+        if (savedInstanceState != null) {   // avoid overlapping error from multiple fragments
+            return;
+        }
+
         // add the fragment
         mapFragment = new MapFragment();
         // root_layout added in activity_main.xml -- add map fragment to it
@@ -71,7 +92,6 @@ public class BottomNavigationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
 
     }
 
