@@ -1,6 +1,8 @@
 package com.jdsv650.bware;
 
 import android.content.SharedPreferences;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -14,14 +16,22 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -62,23 +72,52 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
         lon = getIntent().getExtras().getDouble("longitude");
 
         clearBridgeValues();
-       // getBridgeData(lat, lon);
+        reverseLookup();
 
     }
 
 
-    private void getBridgeData(Double latitude, Double longitude) {
+    private void addBridgeData(Double latitude, Double longitude) {
         String lat = latitude.toString();
         String lon = longitude.toString();
 
-        String urlAsString = Constants.baseUrlAsString + "/api/Bridge/GetByLocation?lat=" + lat
-                + "&lon=" + lon;
-
+        String urlAsString = Constants.baseUrlAsString + "/Api/Bridge/Create";
         String token = preferences.getString("access_token", "");  // is token stored
+        String userName = preferences.getString("userName", "unknown"); // get username
 
         if (token != "") {
+
+            DateFormat df = DateFormat.getTimeInstance();
+            df.setTimeZone(TimeZone.getTimeZone("gmt"));
+            String gmtTime = df.format(new Date());
+
+            Toast.makeText(this, gmtTime, Toast.LENGTH_SHORT).show();
+            // From ios app we want the following format - "2014-07-23 18:01:41 +0000" in UTC
+
             String urlEncoded = Uri.encode(urlAsString);
+
             RequestBody body = RequestBody.create(MEDIA_TYPE, urlEncoded);
+
+            RequestBody formBody = new FormBody.Builder()
+                    .add("BridgeId", "100")
+                    .add("Latitude", lat)
+                    .add("Longitude", lon)
+                    .add("DateCreated", gmtTime)
+                    .add("DateModified", gmtTime)
+                    .add("UserCreated", userName)
+                    .add("UserModified", userName)
+                    .add("NumberOfVotes", "0")
+                    .add("isLocked", "true")
+                    .build();
+
+            /*************
+             *
+             *
+             *
+             *
+             * add ........................................
+             *
+             */
 
             Request request = new Request.Builder()
                     .url(urlAsString)
@@ -413,5 +452,173 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
         }
 
     }
+
+    void reverseLookup()
+    {
+        EditText cityET = (EditText) findViewById(R.id.add_cityEditText);
+        EditText stateET = (EditText) findViewById(R.id.add_stateEditText);
+        EditText descET = (EditText) findViewById(R.id.add_descriptionEditText);
+        EditText zipET = (EditText) findViewById(R.id.add_zipEditText);
+        EditText countryET = (EditText) findViewById(R.id.add_countryEditText);
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+        try
+        {
+            List<Address> addressList = geocoder.getFromLocation(lat, lon, 1);
+
+            if (addressList != null && addressList.size() > 0) {
+                Address address = addressList.get(0);
+                // sending back first address line and locality
+                String city = address.getLocality();
+                String state = getStateByName(address.getAdminArea());  // convert New York -> NY
+                String desc = address.getThoroughfare();
+                String zip = address.getPostalCode();
+                String country = getCountryByName(address.getCountryName()); // convert United States -> US
+
+                cityET.setText(city);
+                stateET.setText(state);
+                descET.setText(desc);
+                zipET.setText(zip);
+                countryET.setText(country);
+
+                /* String result = "City = " + city + " State = " + state + " desc = " + desc
+                        + " zip = " + zip + " country = " + country;
+                Toast.makeText(this, "REVERSE GEOCODE = " + result, Toast.LENGTH_LONG).show(); */
+            }
+        }
+        catch (Exception ex)
+        {
+            // Couldn't reverse geocode; just ignore - let user fill in all fields
+        }
+    }
+
+    String getStateByName(String name)
+    {
+        switch (name.toUpperCase())
+        {
+            case "ALABAMA":
+                return "AL";
+            case "ALASKA":
+                return "AK";
+            case "ARIZONA":
+                return "AZ";
+            case "ARKANSAS":
+                return "AR";
+            case "CALIFORNIA":
+                return "CA";
+            case "COLORADO":
+                return "CO";
+            case "CONNECTICUT":
+                return "CT";
+            case "DELAWARE":
+                return "DE";
+            case "DISTRICT OF COLUMBIA":
+                return "DC";
+            case "FLORIDA":
+                return "FL";
+            case "GEORGIA":
+                return "GA";
+            case "HAWAII":
+                return "HI";
+            case "IDAHO":
+                return "ID";
+            case "ILLINOIS":
+                return "IL";
+            case "INDIANA":
+                return "IN";
+            case "IOWA":
+                return "IA";
+            case "KANSAS":
+                return "KS";
+            case "KENTUCKY":
+                return "KY";
+            case "LOUISIANA":
+                return "LA";
+            case "MAINE":
+                return "ME";
+            case "MARYLAND":
+                return "MD";
+            case "MASSACHUSETTS":
+                return "MA";
+            case "MICHIGAN":
+                return "MI";
+            case "MINNESOTA":
+                return "MN";
+            case "MISSISSIPPI":
+                return "MS";
+            case "MISSOURI":
+                return "MO";
+            case "MONTANA":
+                return "MT";
+            case "NEBRASKA":
+                return "NE";
+            case "NEVADA":
+                return "NV";
+            case "NEW HAMPSHIRE":
+                return "NH";
+            case "NEW JERSEY":
+                return "NJ";
+            case "NEW MEXICO":
+                return "NM";
+            case "NEW YORK":
+                return "NY";
+            case "NORTH CAROLINA":
+                return "NC";
+            case "NORTH DAKOTA":
+                return "ND";
+            case "OHIO":
+                return "OH";
+            case "OKLAHOMA":
+                return "OK";
+            case "OREGON":
+                return "OR";
+            case "PENNSYLVANIA":
+                return "PA";
+            case "RHODE ISLAND":
+                return "RI";
+            case "SOUTH CAROLINA":
+                return "SC";
+            case "SOUTH DAKOTA":
+                return "SD";
+            case "TENNESSEE":
+                return "TN";
+            case "TEXAS":
+                return "TX";
+            case "UTAH":
+                return "UT";
+            case "VERMONT":
+                return "VT";
+            case "VIRGINIA":
+                return "VA";
+            case "WASHINGTON":
+                return "WA";
+            case "WEST VIRGINIA":
+                return "WV";
+            case "WISCONSIN":
+                return "WI";
+            case "WYOMING":
+                return "WY";
+            default:
+                return "";
+        }
+    }
+
+    String getCountryByName(String name)
+    {
+        switch (name.toUpperCase())
+        {
+            case "UNITED STATES":
+                return "US";
+            case "CANADA":
+                return "CA";
+            case "MEXICO":
+                return "MX";
+            default:
+                return "";
+        }
+
+    }
+
 }
 

@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:background="@color/colorWhite"
-        android:text="Tap and hold map to add a bridge. One per week."
+        android:text="Tap and hold to add a bridge. One per week."
         android:textColor="@color/colorCadmiumOrange" />
 
 
