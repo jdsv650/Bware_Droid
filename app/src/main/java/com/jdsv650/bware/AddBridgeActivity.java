@@ -38,22 +38,21 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
     Double lat = -99.0;
     Double lon = -99.0;
 
-    EditText countryET = (EditText) findViewById(R.id.add_countryEditText);
-    EditText cityET = (EditText) findViewById(R.id.add_cityEditText);
-    EditText stateET = (EditText) findViewById(R.id.add_stateEditText);
-    EditText countyET = (EditText) findViewById(R.id.add_countyEditText);
-    EditText locationET = (EditText) findViewById(R.id.add_descriptionEditText);
-    EditText carriedET = (EditText) findViewById(R.id.add_carriedEditText);
-    EditText crossedET = (EditText) findViewById(R.id.add_crossedEditText);
-    EditText zipET = (EditText) findViewById(R.id.add_zipEditText);
-    EditText straightET = (EditText) findViewById(R.id.add_tandemEditText);
-    EditText triET = (EditText) findViewById(R.id.add_triaxleEditText);
-    EditText comboET = (EditText) findViewById(R.id.add_combinationEditText);
-    EditText doubleET = (EditText) findViewById(R.id.add_doubleEditText);
-    EditText heightET = (EditText) findViewById(R.id.add_heightEditText);
-    EditText otherET = (EditText) findViewById(R.id.add_otherEditText);
-    Switch isRSwitch = (Switch) findViewById(R.id.add_rSwitch);
-
+    EditText countryET;
+    EditText cityET;
+    EditText stateET;
+    EditText countyET;
+    EditText locationET;
+    EditText carriedET;
+    EditText crossedET;
+    EditText zipET;
+    EditText straightET;
+    EditText triET;
+    EditText comboET;
+    EditText doubleET;
+    EditText heightET;
+    EditText otherET;
+    Switch isRSwitch;
 
     private SharedPreferences preferences;
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
@@ -75,6 +74,23 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
         // get shared prefs
         preferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
 
+        countryET = (EditText) findViewById(R.id.add_countryEditText);
+        cityET = (EditText) findViewById(R.id.add_cityEditText);
+        stateET = (EditText) findViewById(R.id.add_stateEditText);
+        countyET = (EditText) findViewById(R.id.add_countyEditText);
+        locationET = (EditText) findViewById(R.id.add_descriptionEditText);
+        carriedET = (EditText) findViewById(R.id.add_carriedEditText);
+        crossedET = (EditText) findViewById(R.id.add_crossedEditText);
+        zipET = (EditText) findViewById(R.id.add_zipEditText);
+        straightET = (EditText) findViewById(R.id.add_tandemEditText);
+        triET = (EditText) findViewById(R.id.add_triaxleEditText);
+        comboET = (EditText) findViewById(R.id.add_combinationEditText);
+        doubleET = (EditText) findViewById(R.id.add_doubleEditText);
+        heightET = (EditText) findViewById(R.id.add_heightEditText);
+        otherET = (EditText) findViewById(R.id.add_otherEditText);
+        isRSwitch = (Switch) findViewById(R.id.add_rSwitch);
+
+
         Button button = (Button) findViewById(R.id.add_submit_button);
         button.setOnClickListener(this);
 
@@ -83,7 +99,6 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
 
         clearBridgeValues();
         reverseLookup();
-
     }
 
 
@@ -241,13 +256,18 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
         }
     };
 
+    Double weightStraight;
+    Double weightTri;
+    Double weightCombo;
+    Double weightDouble;
+    Double height;
+
     @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
             case R.id.add_submit_button:
 
-                //Toast.makeText(this, "Adding Bridge", Toast.LENGTH_SHORT).show();
                 Bridge bridge = new Bridge();
 
                 if (lat == -99 || lon == -99)
@@ -260,38 +280,96 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
                 bridge.longitude = lon;
 
                 // At least one of the following must be set otherwise don't save
-                if (straightET.getText().toString() == "" && triET.getText().toString() == ""
-                        && doubleET.getText().toString() == "" && comboET.getText().toString() == ""
-                        && heightET.getText().toString() == "" && otherET.getText().toString() == ""
+                if (straightET.getText().toString().equals("") && triET.getText().toString().equals("")
+                        && doubleET.getText().toString().equals("") && comboET.getText().toString().equals("")
+                        && heightET.getText().toString().equals("") && otherET.getText().toString().equals("")
                         && isRSwitch.isChecked() == false)
                 {
                     Toast.makeText(this, "Error Creating Bridge , Please supply weight, height, other posting or set R posted switch", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                bridge.weightStraight = Double.parseDouble(straightET.getText().toString());
-                bridge.weightStraight_TriAxle = Double.parseDouble(triET.getText().toString());
-                bridge.weightCombo =  Double.parseDouble(comboET.getText().toString());
-                bridge.weightDouble = Double.parseDouble(doubleET.getText().toString());
-                bridge.height = Double.parseDouble(heightET.getText().toString());
+
+                try { weightStraight = Double.parseDouble(straightET.getText().toString()); }
+                catch (NumberFormatException ex) { weightStraight = null; }
+
+                try { weightTri = Double.parseDouble(triET.getText().toString()); }
+                catch (NumberFormatException ex) { weightTri = null; }
+
+                try { weightCombo = Double.parseDouble(comboET.getText().toString()); }
+                catch (NumberFormatException ex) { weightCombo = null; }
+
+                try { weightDouble = Double.parseDouble(doubleET.getText().toString()); }
+                catch (NumberFormatException ex) { weightDouble = null; }
+
+                try { height = Double.parseDouble(heightET.getText().toString()); }
+                catch (NumberFormatException ex) { height = null; }
+
+                if (weightStraight == null && weightTri == null && weightCombo == null
+                        && weightDouble == null && height == null && isRSwitch.isChecked() == false)
+                {
+                    Toast.makeText(this, "Error Creating Bridge , Please supply valid values for weight or height", Toast.LENGTH_SHORT).show();
+                    return;  // test for malformed input
+                }
+
+                bridge.weightStraight = weightStraight;
+                bridge.weightStraight_TriAxle = weightTri;
+                bridge.weightCombo =  weightCombo;
+                bridge.weightDouble = weightDouble;
+                bridge.height = height;
                 bridge.isRPosted = isRSwitch.isChecked();
                 bridge.otherPosting = otherET.getText().toString();
 
-                if (bridge.weightStraight < 0 || bridge.weightStraight > 100 ||
-                    bridge.weightStraight_TriAxle < 0 || bridge.weightStraight_TriAxle > 100 ||
-                    bridge.weightDouble < 0 || bridge.weightDouble > 100    ||
-                    bridge.weightCombo < 0 || bridge.weightCombo > 100 ||
-                    bridge.height < 0 || bridge.height > 22)
+                if (bridge.weightStraight != null)
                 {
-                    Toast.makeText(this, "Error Creating Bridge , Please supply reasonable values for weight or height", Toast.LENGTH_SHORT).show();
-                    return;
+                    if (bridge.weightStraight < 0 || bridge.weightStraight > 100)
+                    {
+                        Toast.makeText(this, "Error Creating Bridge , Please supply a reasonable value for weight straight", Toast.LENGTH_SHORT).show();
+                        return;  // test for input within range
+                    }
                 }
 
-                if(countryET.getText().toString() == "" || stateET.getText().toString() == "" ||
-                        countyET.getText().toString() == "")
+                if (bridge.weightStraight_TriAxle != null)
+                {
+                    if (bridge.weightStraight_TriAxle < 0 || bridge.weightStraight_TriAxle > 100)
+                    {
+                        Toast.makeText(this, "Error Creating Bridge , Please supply a reasonable value for weight straight triaxle", Toast.LENGTH_SHORT).show();
+                        return;  // test for input within range
+                    }
+                }
+
+                if (bridge.weightDouble != null)
+                {
+                    if (bridge.weightDouble < 0 || bridge.weightDouble > 100)
+                    {
+                        Toast.makeText(this, "Error Creating Bridge , Please supply a reasonable value for weight double", Toast.LENGTH_SHORT).show();
+                        return;  // test for input within range
+                    }
+                }
+
+                if (bridge.weightCombo != null)
+                {
+                    if (bridge.weightCombo < 0 || bridge.weightCombo > 100)
+                    {
+                        Toast.makeText(this, "Error Creating Bridge , Please supply a reasonable value for weight combo", Toast.LENGTH_SHORT).show();
+                        return;  // test for input within range
+                    }
+                }
+
+                if (bridge.height != null)
+                {
+                    if (bridge.height < 0 || bridge.height > 100)
+                    {
+                        Toast.makeText(this, "Error Creating Bridge , Please supply a reasonable value for height", Toast.LENGTH_SHORT).show();
+                        return;  // test for input within range
+                    }
+                }
+
+                if(countryET.getText().toString().equals("") || stateET.getText().toString().equals("") ||
+                        countyET.getText().toString().equals("") )
                 {
                     Toast.makeText(this, "Error Creating Bridge , Please supply country, state and county", Toast.LENGTH_SHORT).show();
-                    return;
+                    return;  // check for country state and county - required
                 }
 
                 // location info 8 fields
