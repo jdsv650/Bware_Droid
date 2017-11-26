@@ -45,6 +45,23 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
     Double lat = -99.0;
     Double lon = -99.0;
 
+    EditText countryET = (EditText) findViewById(R.id.add_countryEditText);
+    EditText cityET = (EditText) findViewById(R.id.add_cityEditText);
+    EditText stateET = (EditText) findViewById(R.id.add_stateEditText);
+    EditText countyET = (EditText) findViewById(R.id.add_countyEditText);
+    EditText locationET = (EditText) findViewById(R.id.add_descriptionEditText);
+    EditText carriedET = (EditText) findViewById(R.id.add_carriedEditText);
+    EditText crossedET = (EditText) findViewById(R.id.add_crossedEditText);
+    EditText zipET = (EditText) findViewById(R.id.add_zipEditText);
+    EditText straightET = (EditText) findViewById(R.id.add_tandemEditText);
+    EditText triET = (EditText) findViewById(R.id.add_triaxleEditText);
+    EditText comboET = (EditText) findViewById(R.id.add_combinationEditText);
+    EditText doubleET = (EditText) findViewById(R.id.add_doubleEditText);
+    EditText heightET = (EditText) findViewById(R.id.add_heightEditText);
+    EditText otherET = (EditText) findViewById(R.id.add_otherEditText);
+    Switch isRSwitch = (Switch) findViewById(R.id.add_rSwitch);
+
+
     private SharedPreferences preferences;
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
     Bridge theBridge = new Bridge();
@@ -77,9 +94,9 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
     }
 
 
-    private void addBridgeData(Double latitude, Double longitude) {
-        String lat = latitude.toString();
-        String lon = longitude.toString();
+    private void addBridgeData(Bridge bridge) {
+        String lat = bridge.latitude.toString();
+        String lon = bridge.longitude.toString();
 
         String urlAsString = Constants.baseUrlAsString + "/Api/Bridge/Create";
         String token = preferences.getString("access_token", "");  // is token stored
@@ -160,15 +177,6 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
                                         theBridge.featureCrossed = json.optString("FeatureCrossed");
                                         theBridge.zip = json.optString("Zip");
 
-                                        EditText countryET = (EditText) findViewById(R.id.countryEditText);
-                                        EditText cityET = (EditText) findViewById(R.id.cityEditText);
-                                        EditText stateET = (EditText) findViewById(R.id.stateEditText);
-                                        EditText countyET = (EditText) findViewById(R.id.countyEditText);
-
-                                        EditText locationET = (EditText) findViewById(R.id.descriptionEditText);
-                                        EditText carriedET = (EditText) findViewById(R.id.carriedEditText);
-                                        EditText crossedET = (EditText) findViewById(R.id.crossedEditText);
-                                        EditText zipET = (EditText) findViewById(R.id.zipEditText);
 
                                         setEditTextAsTextView(countryET);
                                         countryET.setText(theBridge.country);
@@ -205,14 +213,7 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
                                         theBridge.otherPosting = json.optString("OtherPosting");
                                         theBridge.isRPosted = json.optBoolean("isRposted");
 
-                                        EditText straightET = (EditText) findViewById(R.id.tandemEditText);
-                                        EditText triET = (EditText) findViewById(R.id.triaxleEditText);
-                                        EditText comboET = (EditText) findViewById(R.id.combinationEditText);
-                                        EditText doubleET = (EditText) findViewById(R.id.doubleEditText);
 
-                                        EditText heightET = (EditText) findViewById(R.id.heightEditText);
-                                        EditText otherET = (EditText) findViewById(R.id.otherEditText);
-                                        Switch isRET = (Switch) findViewById(R.id.rSwitch);
 
                                         setEditTextAsTextView(straightET);
                                         if (theBridge.weightStraight != -99) {
@@ -242,8 +243,8 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
                                         setEditTextAsTextView(otherET);
 
                                         otherET.setText(theBridge.otherPosting);
-                                        isRET.setChecked(theBridge.isRPosted);
-                                        isRET.setEnabled(false);
+                                        isRSwitch.setChecked(theBridge.isRPosted);
+                                        isRSwitch.setEnabled(false);
 
 
                                         /***
@@ -445,9 +446,71 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId()) {
             case R.id.add_submit_button:
 
-                Toast.makeText(this, "Adding Bridge", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Adding Bridge", Toast.LENGTH_SHORT).show();
+                Bridge bridge = new Bridge();
 
-                // finish();
+                if (lat == -99 || lon == -99)
+                {
+                    Toast.makeText(this, "Error Creating Bridge, Please try again", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                bridge.latitude = lat;
+                bridge.longitude = lon;
+
+                // At least one of the following must be set otherwise don't save
+                if (straightET.getText().toString() == "" && triET.getText().toString() == ""
+                        && doubleET.getText().toString() == "" && comboET.getText().toString() == ""
+                        && heightET.getText().toString() == "" && otherET.getText().toString() == ""
+                        && isRSwitch.isChecked() == false)
+                {
+                    Toast.makeText(this, "Error Creating Bridge , Please supply weight, height, other posting or set R posted switch", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                bridge.weightStraight = Double.parseDouble(straightET.getText().toString());
+                bridge.weightStraight_TriAxle = Double.parseDouble(triET.getText().toString());
+                bridge.weightCombo =  Double.parseDouble(comboET.getText().toString());
+                bridge.weightDouble = Double.parseDouble(doubleET.getText().toString());
+                bridge.height = Double.parseDouble(heightET.getText().toString());
+                bridge.isRPosted = isRSwitch.isChecked();
+                bridge.otherPosting = otherET.getText().toString();
+
+                if (bridge.weightStraight < 0 || bridge.weightStraight > 100 ||
+                    bridge.weightStraight_TriAxle < 0 || bridge.weightStraight_TriAxle > 100 ||
+                    bridge.weightDouble < 0 || bridge.weightDouble > 100    ||
+                    bridge.weightCombo < 0 || bridge.weightCombo > 100 ||
+                    bridge.height < 0 || bridge.height > 22)
+                {
+                    Toast.makeText(this, "Error Creating Bridge , Please supply reasonable values for weight or height", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(countryET.getText().toString() == "" || stateET.getText().toString() == "" ||
+                        countyET.getText().toString() == "")
+                {
+                    Toast.makeText(this, "Error Creating Bridge , Please supply country, state and county", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // location info 8 fields
+                // these 3 required
+                bridge.country = countryET.getText().toString();
+                bridge.city = cityET.getText().toString();
+                bridge.state = stateET.getText().toString();
+                // 5 optional
+                bridge.county = countyET.getText().toString();
+                bridge.locationDescription = locationET.getText().toString();
+                bridge.featureCarried = carriedET.getText().toString();
+                bridge.featureCrossed = crossedET.getText().toString();
+                bridge.zip = zipET.getText().toString();
+
+
+                bridge.isLocked = false;
+                bridge.numVotes = 0;
+
+                addBridgeData(bridge);
+
                 break;
         }
 
