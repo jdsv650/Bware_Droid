@@ -168,6 +168,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                                     {
                                         BottomNavigationActivity navActivity = ((BottomNavigationActivity) getActivity());
                                         navActivity.clearAllBridges();
+                                        navActivity.setUpdateRequired(true);
 
                                         for (Integer i = 0; i < jsonArray.length(); i++) {
                                             try {

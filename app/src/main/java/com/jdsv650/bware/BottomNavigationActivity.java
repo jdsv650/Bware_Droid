@@ -72,8 +72,9 @@ public class BottomNavigationActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_search:
 
-                    isUpdateRequired = true;
+                    //isUpdateRequired = true;
                     searchFragment = new SearchFragment();
+                    isUpdateRequired = false;
 
                     getSupportFragmentManager().beginTransaction().add(R.id.root_layout, searchFragment).addToBackStack(null).commit();
 
