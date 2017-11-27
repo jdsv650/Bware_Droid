@@ -106,6 +106,16 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             return;
         }
 
+        if (country.toUpperCase().equals("UNITED STATES") || country.toUpperCase().equals("USA") || country.toUpperCase().equals("U.S."))
+        {
+            country = "US";
+        }
+
+        if (country.toUpperCase().equals("CANADA") || country.toUpperCase().equals("CAN"))
+        {
+            country = "CA";
+        }
+
         // ok make api call
 
         String urlAsString = Constants.baseUrlAsString + "/api/Bridge/GetByInfo";

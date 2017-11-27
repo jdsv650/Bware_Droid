@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -61,7 +63,7 @@ import static com.jdsv650.bware.Constants.PREFS_NAME;
  */
 
 public class MapFragment extends Fragment implements LocationListener, OnMapReadyCallback, GoogleMap.OnMapLongClickListener,
-        GoogleMap.OnMarkerClickListener, BottomNavigationActivity.UpdatedBridgeListListener {
+        GoogleMap.OnMarkerClickListener, BottomNavigationActivity.UpdatedBridgeListListener, View.OnClickListener {
 
     MapFragment mMapFragment;
 
@@ -108,7 +110,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         // get shared prefs
         preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
 
-
     }
 
 
@@ -136,6 +137,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         mMapView = (MapView) mView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // needed to get the map to display immediately
+
+        ImageButton imgButton = (ImageButton) mView.findViewById(R.id.imageButton);
+        imgButton.setOnClickListener(this);
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -203,8 +207,8 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
             Integer minute = 1000 * 60;
 
-            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 0, this);
-            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 30000, 0 , this);
+            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, sixtySeconds * 3, fiveMilesInMeters, this);
+            locManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, sixtySeconds * 3, fiveMilesInMeters , this);
 
         } else {
             ActivityCompat.requestPermissions(getActivity(),
@@ -510,5 +514,33 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     }
 
+    @Override
+    public void onClick(View v) {
 
+        switch (v.getId()) {
+            case R.id.imageButton:
+
+                Toast.makeText(getActivity(), "Refreshing...", Toast.LENGTH_SHORT).show();
+                if (locManager != null)
+                {
+                    if (ContextCompat.checkSelfPermission(this.getActivity().getApplicationContext(),
+                            android.Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        locManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
+                    }
+
+                    Location loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    getBridgeData(loc, 50);
+
+                }
+                else
+                {
+                    Toast.makeText(getActivity(), "Please allow location services ...", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+        }
+
+    }
 }
