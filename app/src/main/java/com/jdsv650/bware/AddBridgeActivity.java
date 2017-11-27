@@ -16,6 +16,7 @@ import android.widget.Toast;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -116,7 +117,7 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
             df.setTimeZone(TimeZone.getTimeZone("gmt"));
             String gmtTime = df.format(new Date());
 
-            Toast.makeText(this, gmtTime, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, gmtTime, Toast.LENGTH_SHORT).show();
             // From ios app we want the following format - "2014-07-23 18:01:41 +0000" in UTC
 
             // String urlEncoded = Uri.encode(urlAsString);
@@ -140,11 +141,11 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
                     .add("Township", bridge.city)
                     .add("Zip", bridge.zip)
                     .add("Country", bridge.country)
-                    .add("WeightStraight", bridge.weightStraight.toString())
-                    .add("WeightStraight_TriAxle", bridge.weightStraight_TriAxle.toString())
-                    .add("WeightDouble", bridge.weightDouble.toString())
-                    .add("WeightCombination", bridge.weightCombo.toString())
-                    .add("Height", bridge.height.toString())
+                    .add("WeightStraight", straightET.getText().toString())
+                    .add("WeightStraight_TriAxle", triET.getText().toString())
+                    .add("WeightDouble", doubleET.getText().toString())
+                    .add("WeightCombination", comboET.getText().toString())
+                    .add("Height", heightET.getText().toString())
                     .add("OtherPosting", bridge.otherPosting)
                     .add("isRposted", isR)
                     .build();
@@ -198,6 +199,15 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
                                     public void run()
                                     {
                                         Toast.makeText(getBaseContext(), "Bridge Created", Toast.LENGTH_SHORT).show();
+                                        try {
+                                            wait(1000);
+                                        }
+                                        catch (Exception ex) {  }
+                                        finally {
+
+                                            finish();
+                                        }
+
                                     }
                                 });
 
@@ -231,7 +241,7 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
 
         } else  // no token found
         {
-            finish(); // logout
+            finish();
         }
 
     }

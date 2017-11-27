@@ -134,31 +134,46 @@ public class DetailActivity extends AppCompatActivity {
                                         EditText zipET = (EditText) findViewById(R.id.zipEditText);
 
                                         setEditTextAsTextView(countryET);
-                                        countryET.setText(theBridge.country);
+                                        if (theBridge.country != null && !theBridge.country.toUpperCase().equals("NULL")) {
+                                            countryET.setText(theBridge.country);
+                                        }
 
                                         setEditTextAsTextView(cityET);
-                                        cityET.setText(theBridge.city);
+                                        if (theBridge.city != null && !theBridge.city.toUpperCase().equals("NULL")) {
+                                            cityET.setText(theBridge.city);
+                                        }
 
                                         setEditTextAsTextView(stateET);
-                                        stateET.setText(theBridge.state);
+                                        if (theBridge.state != null && !theBridge.state.toUpperCase().equals("NULL")) {
+                                            stateET.setText(theBridge.state);
+                                        }
 
                                         setEditTextAsTextView(countyET);
-                                        countyET.setText(theBridge.county);
+                                        if (theBridge.county != null && !theBridge.county.toUpperCase().equals("NULL")) {
+                                            countyET.setText(theBridge.county);
+                                        }
 
                                         setEditTextAsTextView(locationET);
-                                        locationET.setText(theBridge.locationDescription);
+                                        if (theBridge.locationDescription != null && !theBridge.locationDescription.toUpperCase().equals("NULL")) {
+                                            locationET.setText(theBridge.locationDescription);
+                                        }
 
                                         setEditTextAsTextView(carriedET);
-                                        carriedET.setText(theBridge.featureCarried);
+                                        if (theBridge.featureCarried != null && !theBridge.featureCarried.toUpperCase().equals("NULL")) {
+                                            carriedET.setText(theBridge.featureCarried);
+                                        }
 
                                         setEditTextAsTextView(crossedET);
-                                        crossedET.setText(theBridge.featureCrossed);
+                                        if (theBridge.featureCrossed != null && !theBridge.featureCrossed.toUpperCase().equals("NULL")) {
+                                            crossedET.setText(theBridge.featureCrossed);
+                                        }
 
                                         setEditTextAsTextView(zipET);
-                                        zipET.setText(theBridge.zip);
+                                        if (theBridge.zip != null && !theBridge.zip.toUpperCase().equals("NULL")) {
+                                            zipET.setText(theBridge.zip);
+                                        }
 
                                         /*** Restricted ***/
-
                                         theBridge.weightStraight = json.optDouble("WeightStraight", -99.0);
                                         theBridge.weightStraight_TriAxle = json.optDouble("WeightStraight_TriAxle", -99.0);
                                         theBridge.weightCombo = json.optDouble("WeightCombination", -99.0);
@@ -202,129 +217,12 @@ public class DetailActivity extends AppCompatActivity {
 
                                         setEditTextAsTextView(otherET);
 
-                                        otherET.setText(theBridge.otherPosting);
+                                        if (theBridge.otherPosting != null && !theBridge.otherPosting.toUpperCase().equals("NULL")) {
+                                            otherET.setText(theBridge.otherPosting);
+                                        }
+
                                         isRET.setChecked(theBridge.isRPosted);
                                         isRET.setEnabled(false);
-
-
-                                        /***
-                                         * {"BridgeId":4,"BIN":"3329700","Latitude":43.231433040485619,"Longitude":-78.811738031051618,"FeatureCarried":"WILLOW ROAD","FeatureCrossed":"E B TWELVEMILE CK","LocationDescription":".1 MI SE OF SOUTH WILSON","State":"NY","County":"NIAGARA","Township":"WILSON TOWN","Zip":"","Country":"US","Height":null,"WeightStraight":15.0,"WeightStraight_TriAxle":null,"WeightCombination":null,"WeightDouble":null,"isRposted":false,"OtherPosting":"","DateCreated":"2015-08-20T19:31:00","DateModified":"2015-10-01T00:11:58","UserCreated":"jdsv650@yahoo.com","UserModified":"jdsv650@yahoo.com","NumberOfVotes":0,"User1Verified":null,"User2Verified":null,"User3Verified":null,"User1Reason":null,"User2Reason":null,"User3Reason":null,"isLocked":false,"isActive":true}
-                                         */
-
-                                        /**
-                                         *  if let reason1 = data["User1Reason"] as? Bool
-                                         {
-                                         if !reason1 { self.thumb1.hidden = false }
-                                         else { self.thumb1Edit.hidden = false }
-                                         }
-
-                                         if let reason2 = data["User2Reason"] as? Bool
-                                         {
-                                         if !reason2 { self.thumb2.hidden = false }
-                                         else { self.thumb2Edit.hidden = false }
-                                         }
-
-                                         if let reason3 = data["User3Reason"] as? Bool
-                                         {
-                                         if !reason3 { self.thumb3.hidden = false }
-                                         else { self.thumb3Edit.hidden = false }
-                                         }
-
-                                         if let bridgeId = data["BridgeId"] as? Int
-                                         {
-                                         self.bridgeId = bridgeId
-                                         }
-
-                                         if let weightStraight = data["WeightStraight"] as? Double
-                                         {
-                                         self.weightStraightTF.text = weightStraight.toString()
-                                         self.theBridge.weightStraight = weightStraight
-                                         }
-
-                                         if let weightTri = data["WeightStraight_TriAxle"] as? Double
-                                         {
-                                         self.weightTriAxle.text = weightTri.toString()
-                                         self.theBridge.weightStraight_TriAxle = weightTri
-                                         }
-
-                                         if let weightCombo = data["WeightCombination"] as? Double
-                                         {
-                                         self.weightComboTF.text = weightCombo.toString()
-                                         self.theBridge.weightCombo = weightCombo
-                                         }
-
-                                         if let weightDouble = data["WeightDouble"] as? Double
-                                         {
-                                         self.weightDoubleTF.text = weightDouble.toString()
-                                         self.theBridge.weightDouble = weightDouble
-                                         }
-
-                                         if let height = data["Height"] as? Double
-                                         {
-                                         self.heightTF.text = height.toString()
-                                         self.theBridge.height = height
-                                         }
-
-                                         if let isR = data["isRposted"] as? Bool
-                                         {
-                                         self.isRSwitch.on = isR
-                                         self.theBridge.isRPosted = isR
-                                         }
-
-                                         if let desc = data["LocationDescription"] as? String
-                                         {
-                                         self.descriptionTF.text = desc
-                                         self.theBridge.locationDescription = desc
-                                         }
-
-                                         if let city = data["Township"] as? String
-                                         {
-                                         self.cityTF.text = city
-                                         self.theBridge.city = city
-                                         }
-
-                                         if let state = data["State"] as? String
-                                         {
-                                         self.stateTF.text = state
-                                         self.theBridge.state = state
-                                         }
-
-                                         if let zip = data["Zip"] as? String
-                                         {
-                                         self.zipTF.text = zip
-                                         self.theBridge.zip = zip
-                                         }
-
-                                         if let country = data["Country"] as? String
-                                         {
-                                         self.CountryTF.text = country
-                                         self.theBridge.country = country
-                                         }
-
-                                         if let other = data["OtherPosting"] as? String
-                                         {
-                                         self.otherPostingTF.text = other
-                                         self.theBridge.otherPosting = other
-                                         }
-
-                                         if let carried = data["FeatureCarried"] as? String
-                                         {
-                                         self.carriedTF.text = carried
-                                         self.theBridge.featureCarried = carried
-                                         }
-
-                                         if let crossed = data["FeatureCrossed"] as? String
-                                         {
-                                         self.crossedTF.text = crossed
-                                         self.theBridge.featureCrossed = crossed
-                                         }
-
-                                         if let county = data["County"] as? String
-                                         {
-                                         self.countyTF.text = county
-                                         self.theBridge.county = county
-                                         }
-                                         */
 
                                     }
                                     catch (Exception ex)

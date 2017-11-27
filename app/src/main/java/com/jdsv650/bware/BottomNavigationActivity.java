@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -16,47 +15,34 @@ import java.util.ArrayList;
 public class BottomNavigationActivity extends AppCompatActivity {
 
     public interface UpdatedBridgeListListener {
-        void onFinishUpdatingBridges(ArrayList<com.jdsv650.bware.Bridge> bridges);  // callback for new bridge list
+        void onFinishUpdatingBridges(ArrayList<com.jdsv650.bware.Bridge> bridges);  // callback search
     }
-
 
     MapFragment mapFragment;
     SearchFragment searchFragment;
     SettingsFragment settingsFragment;
     private UpdatedBridgeListListener listener;
+    Boolean isUpdateRequired = false;
 
     ArrayList<Bridge> bridges = new ArrayList<Bridge>();
-
-    /***
-    public ArrayList<Bridge> getBridges() {
-        return bridges;
-    }
-
-    public void setBridges(ArrayList<Bridge> bridges) {
-        this.bridges = bridges;
-    }  ****/
 
     public void addBridge(Bridge bridge)
     {
         this.bridges.add(bridge);
     }
-
     public void clearAllBridges()
     {
         this.bridges.clear();
     }
 
-
-    public Boolean getSearch() {
-        return isSearch;
+    public Boolean getUpdateRequired() {
+        return isUpdateRequired;
     }
-
-    Boolean isSearch = false;
+    public void setUpdateRequired(Boolean isRequired) { isUpdateRequired = isRequired; }
 
     public MapFragment getMapFragment() {
         return mapFragment;
     }
-
     public void setMapFragment(MapFragment mapFragment) {
         this.mapFragment = mapFragment;
     }
@@ -75,19 +61,18 @@ public class BottomNavigationActivity extends AppCompatActivity {
                         getSupportFragmentManager().popBackStackImmediate();
                     }
 
-                    if (isSearch == true)
+                    if (isUpdateRequired)
                     {
-                        Toast.makeText(getBaseContext(), "Returning FROM SEARCH", Toast.LENGTH_LONG).show();
-                        UpdatedBridgeListListener activity = (UpdatedBridgeListListener) getMapFragment();
-
-                        activity.onFinishUpdatingBridges(bridges);
+                        // Toast.makeText(getBaseContext(), "Returning FROM SEARCH", Toast.LENGTH_LONG).show();
+                        UpdatedBridgeListListener mapF = (UpdatedBridgeListListener) getMapFragment();
+                        mapF.onFinishUpdatingBridges(bridges);
                     }
-                    isSearch = false;
+                    isUpdateRequired = false;
 
                     return true;
                 case R.id.navigation_search:
 
-                    isSearch = true;
+                    isUpdateRequired = true;
                     searchFragment = new SearchFragment();
 
                     getSupportFragmentManager().beginTransaction().add(R.id.root_layout, searchFragment).addToBackStack(null).commit();
@@ -98,7 +83,7 @@ public class BottomNavigationActivity extends AppCompatActivity {
                     settingsFragment = new SettingsFragment();
                     getSupportFragmentManager().beginTransaction().add(R.id.root_layout, settingsFragment).addToBackStack(null).commit();
 
-                    isSearch = false;
+                    isUpdateRequired = false;
 
                     return true;
             }
@@ -119,13 +104,11 @@ public class BottomNavigationActivity extends AppCompatActivity {
             public void onBackStackChanged()
             {
                 // back to map so reload markers
+                /***
                 if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
                     // this fragment was removed from back stack
-                    Toast.makeText(getBaseContext(), "ON BACK STACK CHANGED CALL", Toast.LENGTH_SHORT).show();
-
-
-
-                }
+                    //Toast.makeText(getBaseContext(), "ON BACK STACK CHANGED CALL", Toast.LENGTH_SHORT).show();
+                }  ***/
             }
         });
 
