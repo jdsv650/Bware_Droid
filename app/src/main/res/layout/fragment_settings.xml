@@ -27,13 +27,67 @@
             android:layout_margin="10dp"
             android:background="@color/colorCadmiumOrange" />
 
-        <Button
+        <ImageButton
             android:id='@+id/about_button'
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="About"
             android:layout_margin="10dp"
-            android:background="@color/colorCadmiumOrange"/>
+            android:background="@color/colorAthensGray"
+            android:src="@drawable/about"
+            />
+
+        <TextView
+            android:id="@+id/miles_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Find bridges within 50 miles"
+            android:gravity="center"
+            android:layout_margin="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="5"
+                android:layout_marginLeft="10dp"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="8"
+                android:max="95"
+                android:progress="50"
+                android:background="@color/colorWhite"/>
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="100"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/saveSettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="30dp"
+            android:background="@color/colorCadmiumOrange" />
 
     </LinearLayout>
 

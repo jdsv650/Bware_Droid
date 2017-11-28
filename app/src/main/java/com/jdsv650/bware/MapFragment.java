@@ -80,13 +80,11 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
 
-
     Double geographicCenterUSLat = 39.833333;
     Double geographicCenterUSLon = -98.583333;
     Integer numMilesToSearch = 50;  // can be changed by preference
 
     OkHttpClient client;
-
 
 
     public MapFragment() {
@@ -98,7 +96,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 .readTimeout(Constants.timeout, TimeUnit.SECONDS)
                 .build();
 
-
     }
 
     @Override
@@ -109,9 +106,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         // get shared prefs
         preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
-
     }
-
 
     @Override
     public void onResume() {
@@ -170,8 +165,10 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         }
        // Toast.makeText(getActivity(), "Location: Lat = " + location.getLatitude() + "  Lon = " + location.getLongitude(), Toast.LENGTH_SHORT).show();
         updateLocationUI(location.getLatitude(), location.getLongitude());
-        getBridgeData(location, 50);
 
+        // use saved distance
+        Integer distance = preferences.getInt("distance", 50);
+        getBridgeData(location, distance);
     }
 
     @Override
@@ -531,7 +528,9 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                     }
 
                     Location loc = locManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    getBridgeData(loc, 50);
+
+                    Integer distance = preferences.getInt("distance", 50);
+                    getBridgeData(loc, distance);
 
                 }
                 else
