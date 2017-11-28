@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.jdsv650.bware.SearchFragment"
-    android:background="@color/colorAthensGray">
+    android:background="@color/colorAthensGray"
+    android:clickable="true">
 
     <ScrollView
         android:layout_width="match_parent"

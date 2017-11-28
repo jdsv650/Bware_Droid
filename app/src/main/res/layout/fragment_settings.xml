@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     tools:context="com.jdsv650.bware.SettingsFragment"
     android:background="@color/colorAthensGray"
+    android:clickable="true"
      >
 
     <LinearLayout android:orientation="vertical"
