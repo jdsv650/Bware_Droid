@@ -144,14 +144,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         mMapView.getMapAsync(this);
 
-        /***
-        mMapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap mMap) {
-
-            }
-        });  ***/
-
         return mView;
     }
 
@@ -166,7 +158,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
        // Toast.makeText(getActivity(), "Location: Lat = " + location.getLatitude() + "  Lon = " + location.getLongitude(), Toast.LENGTH_SHORT).show();
         updateLocationUI(location.getLatitude(), location.getLongitude());
 
-        // use saved distance
+        // use saved distance to get list of bridges
         Integer distance = preferences.getInt("distance", 50);
         getBridgeData(location, distance);
     }
@@ -178,8 +170,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     @Override
     public void onProviderEnabled(String provider) {
-
-       // Toast.makeText(getActivity(), "Getting updates ...", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -274,7 +264,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
         String urlAsString = Constants.baseUrlAsString + "/api/Bridge/GetByMiles?lat=" + lat
                                 + "&lon=" +lon + "&miles=" +miles;
 
-
         String token = preferences.getString("access_token","");  // is token stored
 
         if (token != "")
@@ -294,6 +283,14 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                 public void onFailure(Call call, IOException e) {
                     String mMessage = e.getMessage().toString();
                     Log.w("failure Response", mMessage);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
                 }
 
                 @Override
@@ -304,7 +301,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
                     if (response.isSuccessful()){
                         try {
-                           // final JSONObject json = new JSONObject(mMessage);
                             final JSONArray jsonArray = new JSONArray(mMessage);
 
                             getActivity().runOnUiThread(new Runnable() {
@@ -317,7 +313,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
                                     }
                                     catch (Exception ex)
                                     {
-                                        Toast.makeText(getActivity(), "Error logging in please try again", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getActivity(), "Error... please try again", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
@@ -458,8 +454,6 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     @Override
     public void onFinishUpdatingBridges(ArrayList<Bridge> bridges) {
-
-        //Toast.makeText(getActivity(), "FINISHED UPDATING BRIDGES CALLED", Toast.LENGTH_SHORT).show();
 
         drawMapFromBridgeList(bridges);
 

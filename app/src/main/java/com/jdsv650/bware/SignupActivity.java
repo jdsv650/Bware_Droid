@@ -110,6 +110,14 @@ public class SignupActivity extends AppCompatActivity {
             public void onFailure(Call call, IOException e) {
                 String mMessage = e.getMessage().toString();
                 Log.w("failure Response", mMessage);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SignupActivity.this, "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
                 //call.cancel();
             }
 
@@ -236,7 +244,6 @@ public class SignupActivity extends AppCompatActivity {
                             @Override
                             public void run() {
 
-                                // Toast.makeText(getBaseContext(), mMessage, Toast.LENGTH_LONG).show();
                                 try {
 
                                     String accessToken = json.getString("access_token");

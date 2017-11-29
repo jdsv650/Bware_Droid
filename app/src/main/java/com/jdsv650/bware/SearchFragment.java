@@ -144,8 +144,16 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
             trustAllclient.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    String mMessage = e.getMessage().toString();
+                    final String mMessage = e.getMessage().toString();
                     Log.w("failure Response", mMessage);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
                     //call.cancel();
                 }
 
@@ -175,8 +183,6 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                                                 Bridge b = new Bridge();
 
-                                                //theBridge.country = json.optString("Country");
-
                                                 final Double lat = jsonArray.getJSONObject(i).getDouble("Latitude");
                                                 Log.i("JSON = ", lat.toString());
                                                 b.latitude = lat;
@@ -202,18 +208,13 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
                                         }
 
-
                                         BottomNavigationView navigation = (BottomNavigationView) getActivity().findViewById(R.id.navigation);
                                         navigation.setSelectedItemId(R.id.navigation_home);
 
                                     }
                                     catch (Exception ex)
                                     {
-                                        // crash..... fix me
-
-                                              //  Toast.makeText(getContext(), "Error retrieving bridge info - try again", Toast.LENGTH_SHORT).show();
-
-
+                                        Toast.makeText(getActivity(), "Error parsing bridge", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
@@ -231,7 +232,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                                 @Override
                                 public void run()
                                 {
-                                    Toast.makeText(getContext(), "Please verify username and password", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "Please verify username and password", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -241,7 +242,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                                 @Override
                                 public void run()
                                 {
-                                    Toast.makeText(getContext(), "Network related error. Please try again", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), "Network related error. Please try again", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -255,7 +256,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         }
         else  // no token found
         {
-            Toast.makeText(getContext(), "User Not Found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "User Not Found", Toast.LENGTH_SHORT).show();
             getActivity().finish(); // logout
         }
 

@@ -120,6 +120,14 @@ public class LoginActivity extends AppCompatActivity implements ResetPasswordFra
             public void onFailure(Call call, IOException e) {
                 String mMessage = e.getMessage().toString();
                 Log.w("failure Response", mMessage);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(LoginActivity.this, "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
                 //call.cancel();
             }
 
@@ -137,12 +145,10 @@ public class LoginActivity extends AppCompatActivity implements ResetPasswordFra
                             @Override
                             public void run() {
 
-                                // Toast.makeText(getBaseContext(), mMessage, Toast.LENGTH_LONG).show();
                                 try {
 
                                     /***
                                     String err = json.getString("error");
-
                                     if (err == "invalid_grant")
                                     {
                                         Toast.makeText(getBaseContext(), "Please verify your email and password", Toast.LENGTH_SHORT).show();
@@ -222,7 +228,6 @@ public class LoginActivity extends AppCompatActivity implements ResetPasswordFra
         FragmentManager fm = getFragmentManager();
 
         ResetPasswordFragment resetDialog = new ResetPasswordFragment();
-        //dialog = resetDialog;
         resetDialog.show(fm, "Reset Password");
     }
 
@@ -251,6 +256,14 @@ public class LoginActivity extends AppCompatActivity implements ResetPasswordFra
             public void onFailure(Call call, IOException e) {
                 String mMessage = e.getMessage().toString();
                 Log.w("failure Response", mMessage);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(LoginActivity.this, "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
                 //call.cancel();
             }
 
@@ -326,8 +339,6 @@ public class LoginActivity extends AppCompatActivity implements ResetPasswordFra
 
             }
         });
-
-
 
     }
 }

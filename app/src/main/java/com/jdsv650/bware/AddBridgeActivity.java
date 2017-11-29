@@ -1,5 +1,6 @@
 package com.jdsv650.bware;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
@@ -16,7 +17,6 @@ import android.widget.Toast;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -103,24 +103,23 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
     }
 
 
+    // make api call to bridge/create
     private void addBridgeData(Bridge bridge) {
         String lat = bridge.latitude.toString();
         String lon = bridge.longitude.toString();
 
         String urlAsString = Constants.baseUrlAsString + "/Api/Bridge/Create";
-        String token = preferences.getString("access_token", "");  // is token stored
+        String token = preferences.getString("access_token", "");  // get stored token
         String userName = preferences.getString("userName", "unknown"); // get username
 
-        if (token != "") {
+        if (token != "") {  // stored bearer token
 
             DateFormat df = DateFormat.getTimeInstance();
             df.setTimeZone(TimeZone.getTimeZone("gmt"));
             String gmtTime = df.format(new Date());
-
             //Toast.makeText(this, gmtTime, Toast.LENGTH_SHORT).show();
             // From ios app we want the following format - "2014-07-23 18:01:41 +0000" in UTC
 
-            // String urlEncoded = Uri.encode(urlAsString);
             String isR = bridge.isRPosted ? "true" : "false";
 
             RequestBody formBody = new FormBody.Builder()
@@ -163,6 +162,14 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
                 public void onFailure(Call call, IOException e) {
                     String mMessage = e.getMessage().toString();
                     Log.w("failure Response", mMessage);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(AddBridgeActivity.this, "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
                     //call.cancel();
                 }
 
@@ -276,7 +283,7 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
 
         switch (v.getId()) {
-            case R.id.add_submit_button:
+            case R.id.add_submit_button:   // submit pressed so build a bridge object to pass
 
                 Bridge bridge = new Bridge();
 
@@ -394,7 +401,6 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
                 bridge.featureCrossed = crossedET.getText().toString();
                 bridge.zip = zipET.getText().toString();
 
-
                 bridge.isLocked = false;
                 bridge.numVotes = 0;
 
@@ -405,7 +411,7 @@ public class AddBridgeActivity extends AppCompatActivity implements View.OnClick
 
     }
 
-    void reverseLookup()
+    void reverseLookup()   // reverse geocode to pre-populate some of the text boxes
     {
         EditText cityET = (EditText) findViewById(R.id.add_cityEditText);
         EditText stateET = (EditText) findViewById(R.id.add_stateEditText);

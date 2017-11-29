@@ -3,12 +3,10 @@ package com.jdsv650.bware;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -21,9 +19,9 @@ public class BottomNavigationActivity extends AppCompatActivity {
     MapFragment mapFragment;
     SearchFragment searchFragment;
     SettingsFragment settingsFragment;
+
     private UpdatedBridgeListListener listener;
     Boolean isUpdateRequired = false;
-
     ArrayList<Bridge> bridges = new ArrayList<Bridge>();
 
     public void addBridge(Bridge bridge)
@@ -55,35 +53,31 @@ public class BottomNavigationActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
             switch (item.getItemId()) {
-                case R.id.navigation_home:
+                case R.id.navigation_home:   // home - map pressed
 
                     while (getSupportFragmentManager().getBackStackEntryCount() > 0) {   // pop back to map
                         getSupportFragmentManager().popBackStackImmediate();
                     }
 
-                    if (isUpdateRequired)
+                    if (isUpdateRequired)  // set on successful search
                     {
-                        // Toast.makeText(getBaseContext(), "Returning FROM SEARCH", Toast.LENGTH_LONG).show();
                         UpdatedBridgeListListener mapF = (UpdatedBridgeListListener) getMapFragment();
-                        mapF.onFinishUpdatingBridges(bridges);
+                        mapF.onFinishUpdatingBridges(bridges);  // pass in the bridges to display
                     }
                     isUpdateRequired = false;
 
                     return true;
-                case R.id.navigation_search:
+                case R.id.navigation_search:  // search pressed
 
-                    //isUpdateRequired = true;
                     searchFragment = new SearchFragment();
                     isUpdateRequired = false;
-
                     getSupportFragmentManager().beginTransaction().add(R.id.root_layout, searchFragment).addToBackStack(null).commit();
 
                     return true;
-                case R.id.navigation_settings:
+                case R.id.navigation_settings: // settings pressed
 
                     settingsFragment = new SettingsFragment();
                     getSupportFragmentManager().beginTransaction().add(R.id.root_layout, settingsFragment).addToBackStack(null).commit();
-
                     isUpdateRequired = false;
 
                     return true;

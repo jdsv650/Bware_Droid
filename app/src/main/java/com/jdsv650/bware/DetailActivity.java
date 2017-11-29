@@ -59,13 +59,12 @@ public class DetailActivity extends AppCompatActivity {
         lat = getIntent().getExtras().getDouble("latitude");
         lon = getIntent().getExtras().getDouble("longitude");
 
-        //Toast.makeText(this, "Lat = " + lat.toString() + " Lon = " + lon.toString(), Toast.LENGTH_SHORT).show();
         clearBridgeValues();
         getBridgeData(lat, lon);
-
     }
 
 
+    // call api - bridge/getByLocation
     private void getBridgeData(Double latitude, Double longitude)
     {
         String lat = latitude.toString();
@@ -74,12 +73,11 @@ public class DetailActivity extends AppCompatActivity {
         String urlAsString = Constants.baseUrlAsString + "/api/Bridge/GetByLocation?lat=" + lat
                 + "&lon=" +lon;
 
-        String token = preferences.getString("access_token","");  // is token stored
+        String token = preferences.getString("access_token","");  // get token
 
-        if (token != "")
+        if (token != "")  // token stored
         {
             String urlEncoded = Uri.encode(urlAsString);
-            RequestBody body = RequestBody.create(MEDIA_TYPE, urlEncoded);
 
             Request request = new Request.Builder()
                     .url(urlAsString)
@@ -93,6 +91,14 @@ public class DetailActivity extends AppCompatActivity {
                 public void onFailure(Call call, IOException e) {
                     String mMessage = e.getMessage().toString();
                     Log.w("failure Response", mMessage);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(DetailActivity.this, "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
                     //call.cancel();
                 }
 
@@ -275,7 +281,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
 
-
     void clearBridgeValues()
     {
         theBridge.country = "";
@@ -299,7 +304,6 @@ public class DetailActivity extends AppCompatActivity {
         et.setSelected(false);
         et.setKeyListener(null);
         et.setOnTouchListener(otl);
-        //et.setBackgroundResource(android.R.color.transparent);
     }
 
     private View.OnTouchListener otl = new View.OnTouchListener() {
