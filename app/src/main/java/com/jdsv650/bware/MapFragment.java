@@ -257,9 +257,19 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
     private void getBridgeData(Location location, Integer miles)
     {
+        Double lat;
+        Double lon;
 
-        Double lat = location.getLatitude();
-        Double lon = location.getLongitude();
+        if (location == null) {
+
+            lat = geographicCenterUSLat;
+            lon = geographicCenterUSLon;
+        }
+        else
+        {
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+        }
 
         String urlAsString = Constants.baseUrlAsString + "/api/Bridge/GetByMiles?lat=" + lat
                                 + "&lon=" +lon + "&miles=" +miles;

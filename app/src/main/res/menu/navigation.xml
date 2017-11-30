@@ -16,4 +16,9 @@
         android:icon="@drawable/settings"
         android:title="Settings" />
 
+    <item
+        android:id="@+id/navigation_graph"
+        android:icon="@drawable/bar_chart"
+        android:title="Graph" />
+
 </menu>
