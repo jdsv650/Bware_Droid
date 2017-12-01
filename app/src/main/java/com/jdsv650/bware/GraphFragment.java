@@ -12,14 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.LabelFormatter;
@@ -109,14 +103,17 @@ public class GraphFragment extends Fragment {
         if (graph == null) { return; }
 
         BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, count[0]),
-                new DataPoint(1, count[1]),
-                new DataPoint(2, count[2]),
-                new DataPoint(3, count[3]),
-                new DataPoint(4, count[4])
+                new DataPoint(0,0),
+                new DataPoint(1, count[0]),
+                new DataPoint(2, count[1]),
+                new DataPoint(3, count[2]),
+                new DataPoint(4, count[3]),
+                new DataPoint(5, count[4]),
+                new DataPoint(6, 0)
         });
 
         series.setSpacing(20);
+
         series.setDrawValuesOnTop(true);
         series.setColor(R.color.colorCadmiumOrange);
         series.setValuesOnTopColor(R.color.colorCadmiumOrange);
@@ -127,11 +124,11 @@ public class GraphFragment extends Fragment {
 
         // use static /state/ labels for horizontal labels
         StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(graph);
-        staticLabelsFormatter.setHorizontalLabels(new String[] {states[0], states[1], states[2], states[3], states[4]});
+        staticLabelsFormatter.setHorizontalLabels(new String[] {"", states[0], states[1], states[2], states[3], states[4], ""});
         graph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
 
-
         graph.addSeries(series);
+
     }
 
 
