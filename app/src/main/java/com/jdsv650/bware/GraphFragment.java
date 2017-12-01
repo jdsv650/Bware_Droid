@@ -82,15 +82,21 @@ public class GraphFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(
-                Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_graph, container, false);
 
         graph = (GraphView) view.findViewById(R.id.graph);
+
+        InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+
+        View v = getActivity().getCurrentFocus();
+
+        if (v != null)
+        {
+            inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
 
         clearStatesAndCount();
         getTopFive();

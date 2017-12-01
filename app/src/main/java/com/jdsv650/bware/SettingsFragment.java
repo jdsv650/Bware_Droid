@@ -48,12 +48,17 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
         InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
-        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
 
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
+        View v = getActivity().getCurrentFocus();
+
+        if (v != null)
+        {
+            inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
 
         Button button = (Button) view.findViewById(R.id.logoutButton);
         button.setOnClickListener(this);
