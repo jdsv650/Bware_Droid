@@ -50,7 +50,7 @@ public class GraphFragment extends Fragment {
     OkHttpClient client;
 
     String[] states = { "", "", "", "", ""};
-    Integer[]  count = { 0, 0, 0, 0, 0};
+    Integer[] count = { 0, 0, 0, 0, 0};
 
     GraphView graph;
 

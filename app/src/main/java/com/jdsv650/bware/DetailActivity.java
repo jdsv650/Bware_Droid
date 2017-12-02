@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -29,10 +31,17 @@ import okhttp3.Response;
 
 import static com.jdsv650.bware.Constants.PREFS_NAME;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements View.OnClickListener {
 
     Double lat = -99.0;
     Double lon = -99.0;
+
+    ImageView noBridge1;
+    ImageView noBridge2;
+    ImageView noBridge3;
+    ImageView editBridge1;
+    ImageView editBridge2;
+    ImageView editBridge3;
 
     private SharedPreferences preferences;
     public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
@@ -52,6 +61,26 @@ public class DetailActivity extends AppCompatActivity {
                 .writeTimeout(Constants.timeout, TimeUnit.SECONDS)   // api hasn't been hit recently
                 .readTimeout(Constants.timeout, TimeUnit.SECONDS)
                 .build();
+
+        noBridge1 = (ImageView) findViewById(R.id.noBridgeImage1);
+        noBridge2 = (ImageView) findViewById(R.id.noBridgeImage2);
+        noBridge3 = (ImageView) findViewById(R.id.noBridgeImage3);
+        editBridge1 = (ImageView) findViewById(R.id.editBridgeImage1);
+        editBridge2 = (ImageView) findViewById(R.id.editBridgeImage2);
+        editBridge3 = (ImageView) findViewById(R.id.editBridgeImage3);
+
+        noBridge1.setVisibility(ImageView.GONE);
+        noBridge2.setVisibility(ImageView.GONE);
+        noBridge3.setVisibility(ImageView.GONE);
+        editBridge1.setVisibility(ImageView.GONE);
+        editBridge2.setVisibility(ImageView.GONE);
+        editBridge3.setVisibility(ImageView.GONE);
+
+        Button noB = (Button) findViewById(R.id.noBridgeButton);
+        noB.setOnClickListener(this);
+
+        Button editB = (Button) findViewById(R.id.wrongInfoButton);
+        editB.setOnClickListener(this);
 
         // get shared prefs
         preferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
@@ -119,6 +148,30 @@ public class DetailActivity extends AppCompatActivity {
 
                                     try
                                     {
+                                        if (!json.isNull("User1Reason"))
+                                        {
+                                            Boolean reason1 = json.getBoolean("User1Reason");
+
+                                            if (!reason1) {  noBridge1.setVisibility(View.VISIBLE); }
+                                            else {  editBridge1.setVisibility(View.VISIBLE); }
+                                        }
+
+                                        if (!json.isNull("User2Reason"))
+                                        {
+                                            Boolean reason2 = json.getBoolean("User2Reason");
+
+                                            if (!reason2) {  noBridge2.setVisibility(View.VISIBLE); }
+                                            else {  editBridge2.setVisibility(View.VISIBLE); }
+                                        }
+
+                                        if (!json.isNull("User3Reason"))
+                                        {
+                                            Boolean reason3 = json.getBoolean("User3Reason");
+
+                                            if (!reason3) {  noBridge3.setVisibility(View.VISIBLE); }
+                                            else {  editBridge3.setVisibility(View.VISIBLE); }
+                                        }
+
                                         theBridge.country = json.optString("Country");
                                         theBridge.city = json.optString("Township");  // city
                                         theBridge.state = json.optString("State");
@@ -233,7 +286,7 @@ public class DetailActivity extends AppCompatActivity {
                                     }
                                     catch (Exception ex)
                                     {
-                                        Toast.makeText(getBaseContext(), "Error logging in please try again", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getBaseContext(), "Error retrieving info, please try again", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
@@ -312,4 +365,24 @@ public class DetailActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.noBridgeButton:  // no bridge pressed
+
+                Toast.makeText(this, "NO Bridge pressed", Toast.LENGTH_SHORT).show();
+
+                break;
+
+            case R.id.wrongInfoButton:  // wrong info pressed
+
+                Toast.makeText(this, "Wrong info pressed", Toast.LENGTH_SHORT).show();
+
+
+                break;
+
+
+        }
+    }
 }
