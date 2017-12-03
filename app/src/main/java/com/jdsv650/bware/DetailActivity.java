@@ -36,6 +36,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     Double lat = -99.0;
     Double lon = -99.0;
+    Integer bridgeId = -99;
 
     ImageView noBridge1;
     ImageView noBridge2;
@@ -90,7 +91,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         removeB.setOnClickListener(this);
 
         // get shared prefs
-        preferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
 
         lat = getIntent().getExtras().getDouble("latitude");
         lon = getIntent().getExtras().getDouble("longitude");
@@ -101,15 +102,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
 
     // call api - bridge/getByLocation
-    private void getBridgeData(Double latitude, Double longitude)
-    {
+    private void getBridgeData(Double latitude, Double longitude) {
         String lat = latitude.toString();
         String lon = longitude.toString();
 
         String urlAsString = Constants.baseUrlAsString + "/api/Bridge/GetByLocation?lat=" + lat
-                + "&lon=" +lon;
+                + "&lon=" + lon;
 
-        String token = preferences.getString("access_token","");  // get token
+        String token = preferences.getString("access_token", "");  // get token
 
         if (token != "")  // token stored
         {
@@ -144,7 +144,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     final String mMessage = response.body().string();
                     Log.w("success Response", mMessage);
 
-                    if (response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         try {
                             final JSONObject json = new JSONObject(mMessage);
                             //final JSONArray jsonArray = new JSONArray(mMessage);
@@ -153,36 +153,43 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                 @Override
                                 public void run() {
 
-                                    try
-                                    {
-                                        if (!json.isNull("User1Reason"))
-                                        {
+                                    try {
+                                        if (!json.isNull("User1Reason")) {
                                             Boolean reason1 = json.getBoolean("User1Reason");
 
-                                            if (!reason1) {  noBridge1.setVisibility(View.VISIBLE); }
-                                            else {  editBridge1.setVisibility(View.VISIBLE); }
+                                            if (!reason1) {
+                                                noBridge1.setVisibility(View.VISIBLE);
+                                            } else {
+                                                editBridge1.setVisibility(View.VISIBLE);
+                                            }
                                         }
 
-                                        if (!json.isNull("User2Reason"))
-                                        {
+                                        if (!json.isNull("User2Reason")) {
                                             Boolean reason2 = json.getBoolean("User2Reason");
 
-                                            if (!reason2) {  noBridge2.setVisibility(View.VISIBLE); }
-                                            else {  editBridge2.setVisibility(View.VISIBLE); }
+                                            if (!reason2) {
+                                                noBridge2.setVisibility(View.VISIBLE);
+                                            } else {
+                                                editBridge2.setVisibility(View.VISIBLE);
+                                            }
                                         }
 
-                                        if (!json.isNull("User3Reason"))
-                                        {
+                                        if (!json.isNull("User3Reason")) {
                                             Boolean reason3 = json.getBoolean("User3Reason");
 
-                                            if (!reason3) {  noBridge3.setVisibility(View.VISIBLE); }
-                                            else {  editBridge3.setVisibility(View.VISIBLE); }
+                                            if (!reason3) {
+                                                noBridge3.setVisibility(View.VISIBLE);
+                                            } else {
+                                                editBridge3.setVisibility(View.VISIBLE);
+                                            }
                                         }
+
+                                        bridgeId = json.optInt("BridgeId", -99);
 
                                         theBridge.country = json.optString("Country");
                                         theBridge.city = json.optString("Township");  // city
                                         theBridge.state = json.optString("State");
-                                        theBridge.county =  json.optString("County");
+                                        theBridge.county = json.optString("County");
 
                                         theBridge.locationDescription = json.optString("LocationDescription");
                                         theBridge.featureCarried = json.optString("FeatureCarried");
@@ -245,9 +252,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                         theBridge.weightCombo = json.optDouble("WeightCombination", -99.0);
                                         theBridge.weightDouble = json.optDouble("WeightDouble", -99.0);
 
-                                        theBridge.height = json.optDouble("Height",-99.0);
+                                        theBridge.height = json.optDouble("Height", -99.0);
                                         theBridge.otherPosting = json.optString("OtherPosting");
-                                        theBridge.isRPosted = json.optBoolean( "isRposted");
+                                        theBridge.isRPosted = json.optBoolean("isRposted");
 
                                         EditText straightET = (EditText) findViewById(R.id.tandemEditText);
                                         EditText triET = (EditText) findViewById(R.id.triaxleEditText);
@@ -279,7 +286,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                         }
 
                                         setEditTextAsTextView(heightET);
-                                        if (theBridge.height != -99) { heightET.setText(theBridge.height.toString()); }
+                                        if (theBridge.height != -99) {
+                                            heightET.setText(theBridge.height.toString());
+                                        }
 
                                         setEditTextAsTextView(otherET);
 
@@ -290,15 +299,13 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                         isRET.setChecked(theBridge.isRPosted);
                                         isRET.setEnabled(false);
 
-                                    }
-                                    catch (Exception ex)
-                                    {
+                                    } catch (Exception ex) {
                                         Toast.makeText(getBaseContext(), "Error retrieving info, please try again", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
 
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -309,18 +316,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         {
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run()
-                                {
+                                public void run() {
                                     Toast.makeText(getBaseContext(), "Please verify username and password", Toast.LENGTH_SHORT).show();
                                 }
                             });
-                        }
-                        else
-                        {
+                        } else {
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run()
-                                {
+                                public void run() {
                                     Toast.makeText(getBaseContext(), "Network related error. Please try again", Toast.LENGTH_SHORT).show();
                                 }
                             });
@@ -332,8 +335,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             });
 
-        }
-        else  // no token found
+        } else  // no token found
         {
             finish(); // logout
         }
@@ -341,8 +343,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    void clearBridgeValues()
-    {
+    void clearBridgeValues() {
         theBridge.country = "";
         theBridge.county = "";
         theBridge.featureCarried = "";
@@ -355,8 +356,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    void setEditTextAsTextView(EditText et)
-    {
+    void setEditTextAsTextView(EditText et) {
         et.setCursorVisible(false);
         et.setLongClickable(false);
         et.setClickable(false);
@@ -367,7 +367,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private View.OnTouchListener otl = new View.OnTouchListener() {
-        public boolean onTouch (View v, MotionEvent event) {
+        public boolean onTouch(View v, MotionEvent event) {
             return true;
         }
     };
@@ -378,8 +378,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         switch (v.getId()) {
             case R.id.noBridgeButton:  // no bridge pressed
 
-                Toast.makeText(this, "NO Bridge pressed", Toast.LENGTH_SHORT).show();
-
+                noBridgePressed();
                 break;
 
             case R.id.wrongInfoButton:  // wrong info pressed
@@ -389,7 +388,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.editButton:
 
-                Toast.makeText(this, "edit info pressed", Toast.LENGTH_SHORT).show();
+                editBridge();
                 break;
 
             case R.id.removeButton:
@@ -399,19 +398,20 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    void removeBridge()
-    {
+    void removeBridge() {
         String urlAsString = Constants.baseUrlAsString + "/api/Bridge/RemoveByLocation";
 
-        String token = preferences.getString("access_token","");  // get token
+        String token = preferences.getString("access_token", "");  // get token
 
         if (token != "")  // token stored
         {
             String urlEncoded = Uri.encode(urlAsString);
 
-            if (lat == -99 || lon == -99) { return; }
+            if (lat == -99 || lon == -99) {
+                return;
+            }
 
-            urlAsString += "?lat=" +lat +"&lon=" +lon;
+            urlAsString += "?lat=" + lat + "&lon=" + lon;
 
             RequestBody formBody = new FormBody.Builder().build();
 
@@ -445,7 +445,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     final String mMessage = response.body().string();
                     Log.w("success Response", mMessage);
 
-                    if (response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         try {
                             final JSONObject json = new JSONObject(mMessage);
 
@@ -453,36 +453,28 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                 @Override
                                 public void run() {
 
-                                    try
-                                    {
-                                        if (!json.isNull("isSuccess"))
-                                        {
+                                    try {
+                                        if (!json.isNull("isSuccess")) {
                                             Boolean success = json.getBoolean("isSuccess");
 
-                                            if (success != true)
-                                            {
+                                            if (success != true) {
                                                 String message = json.optString("message", "Please Try Again");
                                                 Toast.makeText(DetailActivity.this, "Remove Failed, " + message, Toast.LENGTH_SHORT).show();
-                                            }
-                                            else // success
+                                            } else // success
                                             {
                                                 Toast.makeText(DetailActivity.this, "Remove Successful, Bridge marked as inactive", Toast.LENGTH_SHORT).show();
                                             }
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             String message = json.optString("message", "Please Try Again");
                                             Toast.makeText(DetailActivity.this, "Remove Failed, " + message, Toast.LENGTH_SHORT).show();
                                         }
-                                    }
-                                    catch (Exception ex)
-                                    {
+                                    } catch (Exception ex) {
                                         Toast.makeText(getBaseContext(), "Error removing bridge, please try again", Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             });
 
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -493,18 +485,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         {
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run()
-                                {
+                                public void run() {
                                     Toast.makeText(getBaseContext(), "Please verify username and password", Toast.LENGTH_SHORT).show();
                                 }
                             });
-                        }
-                        else
-                        {
+                        } else {
                             runOnUiThread(new Runnable() {
                                 @Override
-                                public void run()
-                                {
+                                public void run() {
                                     Toast.makeText(getBaseContext(), "Network related error. Please try again", Toast.LENGTH_SHORT).show();
                                 }
                             });
@@ -516,8 +504,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             });
 
-        }
-        else  // no token found
+        } else  // no token found
         {
             finish(); // logout
         }
@@ -525,9 +512,144 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    void editBridge()
-    {
+    void editBridge() {
 
+    }
+
+    void noBridgePressed() {
+        String urlAsString = Constants.baseUrlAsString + "/api/Bridge/DownVoteBridge";
+
+        String token = preferences.getString("access_token", "");  // get token
+        String userName = preferences.getString("userName", "");   // get user name
+
+        if (token != "")  // token stored
+        {
+            if (lat == -99 || lon == -99 || bridgeId == -99) {
+                return;
+            }
+
+            String urlEncoded = Uri.encode(urlAsString);
+
+            urlAsString += "/?bridgeId=" + bridgeId + "&userName=" + userName + "&isEdit=false";
+
+            RequestBody formBody = new FormBody.Builder().build();
+
+            Request request = new Request.Builder()
+                    .url(urlAsString)
+                    .addHeader("Authorization", "Bearer " + token)
+                    .post(formBody)
+                    .build();
+
+            OkHttpClient trustAllclient = Helper.trustAllSslClient(client);
+
+            trustAllclient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    String mMessage = e.getMessage().toString();
+                    Log.w("failure Response", mMessage);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(DetailActivity.this, "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+                    //call.cancel();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                    final String mMessage = response.body().string();
+                    Log.w("success Response", mMessage);
+
+                    if (response.isSuccessful()) {
+                        try {
+                            final JSONObject json = new JSONObject(mMessage);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    try {
+                                        if (!json.isNull("isSuccess")) {
+                                            Boolean success = json.getBoolean("isSuccess");
+
+                                            if (success != true) {
+                                                String message = json.optString("message", "Please Try Again");
+                                                Toast.makeText(DetailActivity.this, "Down Vote Failed, " + message, Toast.LENGTH_SHORT).show();
+                                            } else // success
+                                            {
+                                                addThumbsUp(false);
+                                            }
+                                        } else {
+                                            String message = json.optString("message", "Please Try Again");
+                                            Toast.makeText(DetailActivity.this, "Down Vote Failed, " + message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (Exception ex) {
+                                        Toast.makeText(getBaseContext(), "Error down voting bridge, please try again", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    } // end response success
+                    else   // unsuccessful response
+                    {
+                        if (response.code() == 400 || response.code() == 401) // received a response from server
+                        {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "Please verify username and password", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "Network related error. Please try again", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        return;
+                    }
+
+                }
+            });
+
+        } else  // no token found
+        {
+            finish(); // logout
+        }
+
+    }
+
+
+    void addThumbsUp(Boolean isEdit) {
+
+        if (isEdit == false) {
+            if (noBridge1.getVisibility() == View.GONE && noBridge2.getVisibility() == View.GONE && noBridge3.getVisibility() == View.GONE) {
+                noBridge1.setVisibility(View.VISIBLE);
+            } else if (noBridge1.getVisibility() == View.VISIBLE && noBridge2.getVisibility() == View.GONE && noBridge3.getVisibility() == View.GONE) {
+                noBridge2.setVisibility(View.VISIBLE);
+            } else if (noBridge1.getVisibility() == View.VISIBLE && noBridge2.getVisibility() == View.VISIBLE && noBridge3.getVisibility() == View.GONE) {
+                noBridge3.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (editBridge1.getVisibility() == View.GONE && editBridge2.getVisibility() == View.GONE && editBridge3.getVisibility() == View.GONE) {
+                editBridge1.setVisibility(View.VISIBLE);
+            } else if (editBridge1.getVisibility() == View.VISIBLE && editBridge2.getVisibility() == View.GONE && editBridge3.getVisibility() == View.GONE) {
+                editBridge2.setVisibility(View.VISIBLE);
+            } else if (editBridge1.getVisibility() == View.VISIBLE && editBridge2.getVisibility() == View.VISIBLE && editBridge3.getVisibility() == View.GONE) {
+                editBridge3.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
 }
