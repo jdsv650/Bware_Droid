@@ -55,6 +55,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
         View v = getActivity().getCurrentFocus();
 
+        
         if (v != null)
         {
             inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
