@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -79,8 +80,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         Button noB = (Button) findViewById(R.id.noBridgeButton);
         noB.setOnClickListener(this);
 
-        Button editB = (Button) findViewById(R.id.wrongInfoButton);
+        Button wrongB = (Button) findViewById(R.id.wrongInfoButton);
+        wrongB.setOnClickListener(this);
+
+        Button editB = (Button) findViewById(R.id.editButton);
         editB.setOnClickListener(this);
+
+        Button removeB = (Button) findViewById(R.id.removeButton);
+        removeB.setOnClickListener(this);
 
         // get shared prefs
         preferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
@@ -378,11 +385,149 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.wrongInfoButton:  // wrong info pressed
 
                 Toast.makeText(this, "Wrong info pressed", Toast.LENGTH_SHORT).show();
-
-
                 break;
 
+            case R.id.editButton:
 
+                Toast.makeText(this, "edit info pressed", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.removeButton:
+
+                removeBridge();
+                break;
         }
     }
+
+    void removeBridge()
+    {
+        String urlAsString = Constants.baseUrlAsString + "/api/Bridge/RemoveByLocation";
+
+        String token = preferences.getString("access_token","");  // get token
+
+        if (token != "")  // token stored
+        {
+            String urlEncoded = Uri.encode(urlAsString);
+
+            if (lat == -99 || lon == -99) { return; }
+
+            urlAsString += "?lat=" +lat +"&lon=" +lon;
+
+            RequestBody formBody = new FormBody.Builder().build();
+
+            Request request = new Request.Builder()
+                    .url(urlAsString)
+                    .addHeader("Authorization", "Bearer " + token)
+                    .post(formBody)
+                    .build();
+
+            OkHttpClient trustAllclient = Helper.trustAllSslClient(client);
+
+            trustAllclient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    String mMessage = e.getMessage().toString();
+                    Log.w("failure Response", mMessage);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(DetailActivity.this, "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+                    //call.cancel();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                    final String mMessage = response.body().string();
+                    Log.w("success Response", mMessage);
+
+                    if (response.isSuccessful()){
+                        try {
+                            final JSONObject json = new JSONObject(mMessage);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    try
+                                    {
+                                        if (!json.isNull("isSuccess"))
+                                        {
+                                            Boolean success = json.getBoolean("isSuccess");
+
+                                            if (success != true)
+                                            {
+                                                String message = json.optString("message", "Please Try Again");
+                                                Toast.makeText(DetailActivity.this, "Remove Failed, " + message, Toast.LENGTH_SHORT).show();
+                                            }
+                                            else // success
+                                            {
+                                                Toast.makeText(DetailActivity.this, "Remove Successful, Bridge marked as inactive", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            String message = json.optString("message", "Please Try Again");
+                                            Toast.makeText(DetailActivity.this, "Remove Failed, " + message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Toast.makeText(getBaseContext(), "Error removing bridge, please try again", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                    } // end response success
+                    else   // unsuccessful response
+                    {
+                        if (response.code() == 400 || response.code() == 401) // received a response from server
+                        {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    Toast.makeText(getBaseContext(), "Please verify username and password", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                        else
+                        {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    Toast.makeText(getBaseContext(), "Network related error. Please try again", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        return;
+                    }
+
+                }
+            });
+
+        }
+        else  // no token found
+        {
+            finish(); // logout
+        }
+
+    }
+
+
+    void editBridge()
+    {
+
+    }
+
 }
