@@ -498,6 +498,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                             } else // success
                                             {
                                                 Toast.makeText(DetailActivity.this, "Remove Successful, Bridge marked as inactive", Toast.LENGTH_SHORT).show();
+                                                finish();
                                             }
                                         } else {
                                             String message = json.optString("message", "Please Try Again");

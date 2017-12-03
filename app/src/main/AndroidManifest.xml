@@ -23,7 +23,9 @@
         <activity
             android:name=".SignupActivity"
             android:label="@string/sign_up_text" />
-        <activity android:name=".DetailActivity" />
+        <activity android:name=".DetailActivity"
+                  android:noHistory="true"
+            />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

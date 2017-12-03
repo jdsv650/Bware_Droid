@@ -98,14 +98,29 @@ public class EditBridgeActivity extends AppCompatActivity implements View.OnClic
     {
         if (bridge == null || bridge.latitude == -99.0 || bridge.longitude == -99.0) { return; }
 
-        countryET.setText(bridge.country);
-        cityET.setText(bridge.city);
-        stateET.setText(bridge.state);
-        countyET.setText(bridge.county);
-        locationET.setText(bridge.locationDescription);
-        carriedET.setText(bridge.featureCarried);
-        crossedET.setText(bridge.featureCrossed);
-        zipET.setText(bridge.zip);
+        if (bridge.country == null || bridge.country.toUpperCase().equals("NULL")) { countryET.setText(""); }
+        else { countryET.setText(bridge.country); }
+
+        if (bridge.city == null || bridge.city.toUpperCase().equals("NULL")) { cityET.setText(""); }
+        else { cityET.setText(bridge.city); }
+
+        if (bridge.state == null || bridge.state.toUpperCase().equals("NULL")) { stateET.setText(""); }
+        else { stateET.setText(bridge.state);  }
+
+        if (bridge.county == null || bridge.county.toUpperCase().equals("NULL")) { countyET.setText(""); }
+        else { countyET.setText(bridge.county); }
+
+        if (bridge.locationDescription == null || bridge.locationDescription.toUpperCase().equals("NULL")) { locationET.setText(""); }
+        else { locationET.setText(bridge.locationDescription); }
+
+        if (bridge.featureCarried == null || bridge.featureCarried.toUpperCase().equals("NULL")) { carriedET.setText(""); }
+        else { carriedET.setText(bridge.featureCarried);  }
+
+        if (bridge.featureCrossed == null || bridge.featureCrossed.toUpperCase().equals("NULL")) { crossedET.setText(""); }
+        else { crossedET.setText(bridge.featureCrossed);  }
+
+        if (bridge.zip== null || bridge.zip.toUpperCase().equals("NULL")) { zipET.setText(""); }
+        else {  zipET.setText(bridge.zip);  }
 
         if (bridge.weightStraight == -99)
         {
@@ -152,7 +167,9 @@ public class EditBridgeActivity extends AppCompatActivity implements View.OnClic
             heightET.setText(bridge.height.toString());
         }
 
-        otherET.setText(bridge.otherPosting);
+        if (bridge.otherPosting == null || bridge.otherPosting.toUpperCase().equals("NULL")) { otherET.setText(""); }
+        else { otherET.setText(bridge.otherPosting); }
+
         isRSwitch.setChecked(bridge.isRPosted);
 
     }
