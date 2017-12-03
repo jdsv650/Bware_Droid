@@ -389,14 +389,48 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.editButton:
 
-                editBridge();
+                if (isOkToEditOrRemove())
+                {
+                    editBridge();
+                }
+                else
+                {
+                    Toast.makeText(this, "Edit Bridge Failed, Bridge must have at least 3 down votes to be edited", Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             case R.id.removeButton:
 
-                removeBridge();
+                if (isOkToEditOrRemove())
+                {
+                    removeBridge();
+                }
+                else
+                {
+                    Toast.makeText(this, "Remove Bridge Failed, Bridge must have at least 3 down votes to be removed", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
         }
+    }
+
+    private Boolean isOkToEditOrRemove()
+    {
+        Integer count = 0;
+
+        if (noBridge1.getVisibility() == View.VISIBLE) { count += 1; }
+        if (noBridge2.getVisibility() == View.VISIBLE) { count += 1; }
+        if (noBridge3.getVisibility() == View.VISIBLE) { count += 1; }
+        if (editBridge1.getVisibility() == View.VISIBLE) { count += 1; }
+        if (editBridge2.getVisibility() == View.VISIBLE) { count += 1; }
+        if (editBridge3.getVisibility() == View.VISIBLE) { count += 1; }
+
+        if (count >= 3)
+        {
+            return  true;
+        }
+
+        return false;
     }
 
     void removeBridge() {
