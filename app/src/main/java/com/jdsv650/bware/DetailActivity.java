@@ -383,7 +383,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
             case R.id.wrongInfoButton:  // wrong info pressed
 
-                Toast.makeText(this, "Wrong info pressed", Toast.LENGTH_SHORT).show();
+                wrongInfoPressed();
                 break;
 
             case R.id.editButton:
@@ -514,6 +514,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     void editBridge() {
 
+
+
     }
 
     void noBridgePressed() {
@@ -582,6 +584,121 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                             } else // success
                                             {
                                                 addThumbsUp(false);
+                                            }
+                                        } else {
+                                            String message = json.optString("message", "Please Try Again");
+                                            Toast.makeText(DetailActivity.this, "Down Vote Failed, " + message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (Exception ex) {
+                                        Toast.makeText(getBaseContext(), "Error down voting bridge, please try again", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    } // end response success
+                    else   // unsuccessful response
+                    {
+                        if (response.code() == 400 || response.code() == 401) // received a response from server
+                        {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "Please verify username and password", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getBaseContext(), "Network related error. Please try again", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        return;
+                    }
+
+                }
+            });
+
+        } else  // no token found
+        {
+            finish(); // logout
+        }
+
+    }
+
+    void wrongInfoPressed()
+    {
+        String urlAsString = Constants.baseUrlAsString + "/api/Bridge/DownVoteBridge";
+
+        String token = preferences.getString("access_token", "");  // get token
+        String userName = preferences.getString("userName", "");   // get user name
+
+        if (token != "")  // token stored
+        {
+            if (lat == -99 || lon == -99 || bridgeId == -99) {
+                return;
+            }
+
+            String urlEncoded = Uri.encode(urlAsString);
+
+            urlAsString += "/?bridgeId=" + bridgeId + "&userName=" + userName + "&isEdit=true"; // isEdit=true
+
+            RequestBody formBody = new FormBody.Builder().build();
+
+            Request request = new Request.Builder()
+                    .url(urlAsString)
+                    .addHeader("Authorization", "Bearer " + token)
+                    .post(formBody)
+                    .build();
+
+            OkHttpClient trustAllclient = Helper.trustAllSslClient(client);
+
+            trustAllclient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    String mMessage = e.getMessage().toString();
+                    Log.w("failure Response", mMessage);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(DetailActivity.this, "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+                    //call.cancel();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                    final String mMessage = response.body().string();
+                    Log.w("success Response", mMessage);
+
+                    if (response.isSuccessful()) {
+                        try {
+                            final JSONObject json = new JSONObject(mMessage);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    try {
+                                        if (!json.isNull("isSuccess")) {
+                                            Boolean success = json.getBoolean("isSuccess");
+
+                                            if (success != true) {
+                                                String message = json.optString("message", "Please Try Again");
+                                                Toast.makeText(DetailActivity.this, "Down Vote Failed, " + message, Toast.LENGTH_SHORT).show();
+                                            } else // success
+                                            {
+                                                addThumbsUp(true);
                                             }
                                         } else {
                                             String message = json.optString("message", "Please Try Again");
