@@ -1,5 +1,6 @@
 package com.jdsv650.bware;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
@@ -514,8 +515,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     void editBridge() {
 
+        theBridge.latitude = lat;
+        theBridge.longitude = lon;
 
-
+        Intent i = new Intent(this, EditBridgeActivity.class);
+        i.putExtra("bridge", theBridge);
+        startActivity(i);
     }
 
     void noBridgePressed() {

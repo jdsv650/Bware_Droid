@@ -49,7 +49,8 @@
         <activity
             android:name=".BottomNavigationActivity"
             android:label="@string/title_activity_bottom_navigation" />
-        <activity android:name=".AddBridgeActivity"></activity>
+        <activity android:name=".AddBridgeActivity" />
+        <activity android:name=".EditBridgeActivity"></activity>
     </application>
 
 </manifest>

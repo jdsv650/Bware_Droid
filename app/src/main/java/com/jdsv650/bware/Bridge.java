@@ -1,10 +1,12 @@
 package com.jdsv650.bware;
 
+import java.io.Serializable;
+
 /**
  * Created by james on 11/7/17.
  */
 
-public class Bridge {
+public class Bridge implements Serializable {
 
     Double weightStraight = -99.0;
     Double weightStraight_TriAxle = -99.0;
