@@ -83,6 +83,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     Double geographicCenterUSLat = 39.833333;
     Double geographicCenterUSLon = -98.583333;
     Integer numMilesToSearch = 50;  // can be changed by preference
+    Boolean displayDensity = false; // can be changed by preference
 
     OkHttpClient client;
 
@@ -106,6 +107,7 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
 
         // get shared prefs
         preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        displayDensity = preferences.getBoolean("displayDensity", false);
     }
 
     @Override
@@ -374,6 +376,17 @@ public class MapFragment extends Fragment implements LocationListener, OnMapRead
     private void drawMap(JSONArray json)
     {
         gMap.clear();
+
+        preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
+        displayDensity = preferences.getBoolean("displayDensity", false);
+
+        if (displayDensity == true) {
+            gMap.setTrafficEnabled(true);
+        }
+        else
+        {
+            gMap.setTrafficEnabled(false);
+        }
 
         for (Integer i = 0; i < json.length(); i++) {
             try {

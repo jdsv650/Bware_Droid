@@ -37,13 +37,29 @@
             android:src="@drawable/about"
             />
 
+        <Switch
+            android:id="@+id/switchTrafficDensity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:paddingLeft="45dp"
+            android:text="Display Traffic Density On Map"
+            android:textAlignment="center"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            android:thumbTint="@color/colorCadmiumOrange"
+            android:trackTint="@color/colorBlack" />
+
         <TextView
             android:id="@+id/miles_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Find bridges within 50 miles"
             android:gravity="center"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:textColor="@color/colorBlack"
+            android:textSize="14sp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

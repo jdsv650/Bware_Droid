@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     TextView userNameEditText;
     TextView milesTV;
     SeekBar milesBar;
+    Switch densitySwitch;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -70,6 +72,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         ImageButton aboutButton = (ImageButton) view.findViewById(R.id.about_button);
         aboutButton.setOnClickListener(this);
 
+        densitySwitch = (Switch) view.findViewById(R.id.switchTrafficDensity);
+        densitySwitch.setOnClickListener(this);
+
         milesBar = (SeekBar) view.findViewById(R.id.seekBar);
         milesBar.setOnSeekBarChangeListener(this);
 
@@ -79,6 +84,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         SharedPreferences preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
 
         Integer distance = preferences.getInt("distance", 50);  // is distance stored
+        Boolean isDisplayDensityOn = preferences.getBoolean("displayDensity", false);
+
+        // set the display density switch base on stored val
+        densitySwitch.setChecked(isDisplayDensityOn);
+
         milesTV.setText("Find bridges within " + distance + " miles");
         milesBar.setProgress(distance);
 
@@ -135,6 +145,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
                 // get shared prefs
                 preferences.edit().putInt("distance", milesBar.getProgress()+5).commit();
+                preferences.edit().putBoolean("displayDensity", densitySwitch.isChecked()).commit();
                 Toast.makeText(getActivity(), "Saving Settings...refresh map to see updates", Toast.LENGTH_SHORT).show();
                 break;
         }
