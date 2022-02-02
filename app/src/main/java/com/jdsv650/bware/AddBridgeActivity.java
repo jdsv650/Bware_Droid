@@ -1,10 +1,9 @@
 package com.jdsv650.bware;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
