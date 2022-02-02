@@ -19,15 +19,18 @@
 
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
-        <activity android:name=".WelcomeActivity" />
+        <activity android:name=".WelcomeActivity" android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_user_login" />
+            android:label="@string/title_activity_user_login"
+            android:exported="false" />
         <activity
             android:name=".SignupActivity"
-            android:label="@string/sign_up_text" />
+            android:label="@string/sign_up_text"
+            android:exported="false" />
         <activity android:name=".DetailActivity"
                   android:noHistory="true"
+                  android:exported="false"
             />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -43,19 +46,20 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" />
-        <activity android:name=".MainActivity">
+            android:label="@string/title_activity_maps"
+            android:exported="false" />
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".BottomNavigationActivity"
-            android:label="@string/title_activity_bottom_navigation" />
+            android:label="@string/title_activity_bottom_navigation"
+            android:exported="false" />
         <activity android:name=".AddBridgeActivity" />
-        <activity android:name=".EditBridgeActivity"></activity>
+        <activity android:name=".EditBridgeActivity" android:exported="false" ></activity>
 
     </application>
 
