@@ -31,6 +31,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     public static final String PREFS_NAME = "PREFS";
 
     AboutDialog dialog;
+    DeleteAccountDialog deleteDialog;
     TextView userNameEditText;
     TextView milesTV;
     SeekBar milesBar;
@@ -65,6 +66,9 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
         ImageButton aboutButton = (ImageButton) view.findViewById(R.id.about_button);
         aboutButton.setOnClickListener(this);
+
+        ImageButton deleteButton = (ImageButton) view.findViewById(R.id.delete_account_button);
+        deleteButton.setOnClickListener(this);
 
         densitySwitch = (Switch) view.findViewById(R.id.switchTrafficDensity);
         densitySwitch.setOnClickListener(this);
@@ -132,9 +136,13 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
             break;
             case R.id.about_button:
-
                 showAboutDialog();
                 break;
+
+            case R.id.delete_account_button:
+                showDeleteAccountDialog();
+                break;
+
             case R.id.saveSettingsButton:
 
                 // get shared prefs
@@ -173,6 +181,42 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         alertDialogBuilder.create();
         alertDialogBuilder.show();
     }
+
+    // displays delete account dialog
+    private void showDeleteAccountDialog() {
+
+        FragmentManager fm = getFragmentManager();
+
+        DeleteAccountDialog deleteUserDialog = new DeleteAccountDialog();
+        deleteDialog = deleteUserDialog;
+
+        AlertDialog.Builder alertDialogBuilder = null;
+        alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_delete_account, null);
+        alertDialogBuilder.setView(view);
+        alertDialogBuilder.setTitle("Delete User");
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int id)
+            {
+                dialog.dismiss();
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int id)
+            {
+                dialog.cancel();
+            }
+        });
+
+        alertDialogBuilder.create();
+        alertDialogBuilder.show();
+    }
+
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
