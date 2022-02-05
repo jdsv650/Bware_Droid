@@ -19,7 +19,7 @@
 
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
 
-        <activity android:name=".WelcomeActivity" android:exported="false" />
+        <activity android:name=".WelcomeActivity" android:exported="false" android:launchMode="singleTask" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_user_login"

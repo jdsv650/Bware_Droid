@@ -3,13 +3,16 @@ package com.jdsv650.bware;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AlertDialog;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +24,34 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 import static android.content.Context.MODE_PRIVATE;
+import static com.jdsv650.bware.Constants.PREFS_NAME;
+
+import static android.content.Context.MODE_PRIVATE;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class SettingsFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-    public static final String PREFS_NAME = "PREFS";
+    private SharedPreferences preferences;
+    public static final MediaType MEDIA_TYPE = MediaType.parse("application/json");
+    OkHttpClient client;
 
     AboutDialog dialog;
     DeleteAccountDialog deleteDialog;
@@ -49,6 +72,15 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
         InputMethodManager inputManager = (InputMethodManager) getActivity().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
+
+        client = new OkHttpClient.Builder()
+                .connectTimeout(Constants.timeout, TimeUnit.SECONDS) // defaults 10 seconds - not enough if
+                .writeTimeout(Constants.timeout, TimeUnit.SECONDS)   // api hasn't been hit recently
+                .readTimeout(Constants.timeout, TimeUnit.SECONDS)
+                .build();
+
+        // get shared prefs
+        preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
 
         View v = getActivity().getCurrentFocus();
 
@@ -78,9 +110,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
         milesTV = (TextView) view.findViewById(R.id.miles_textView);
 
-        // get shared prefs
-        SharedPreferences preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
-
         Integer distance = preferences.getInt("distance", 50);  // is distance stored
         Boolean isDisplayDensityOn = preferences.getBoolean("displayDensity", false);
 
@@ -102,9 +131,6 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
         TextView userNameEditText = (TextView) getView().findViewById(R.id.usernameID);
         userNameEditText.setTextSize(18);
 
-        // get shared prefs
-        SharedPreferences preferences = getContext().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
-
         String name = preferences.getString("userName","");  // is token stored
 
         if (name != "" )
@@ -120,21 +146,11 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
 
-        // get shared prefs
-        SharedPreferences preferences = getActivity().getSharedPreferences(PREFS_NAME,MODE_PRIVATE);
-
         switch (v.getId()) {
             case R.id.logoutButton:
+                logoutUser();
+                break;
 
-                Toast.makeText(getActivity(), "Logout Pressed", Toast.LENGTH_SHORT).show();
-
-                preferences.edit().remove(".expires").commit();
-                preferences.edit().remove("access_token").commit();
-                preferences.edit().remove("userName").commit();
-
-                getActivity().finish();
-
-            break;
             case R.id.about_button:
                 showAboutDialog();
                 break;
@@ -200,6 +216,7 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
             @Override
             public void onClick(DialogInterface dialog, int id)
             {
+                deleteAccount();
                 dialog.dismiss();
             }
         });
@@ -215,6 +232,163 @@ public class SettingsFragment extends Fragment implements View.OnClickListener, 
 
         alertDialogBuilder.create();
         alertDialogBuilder.show();
+    }
+
+
+    private void deleteAccount()
+    {
+        // make delete api call
+        String urlAsString = Constants.baseUrlAsString + "/api/Account/DeleteUser";
+
+        String token = preferences.getString("access_token","");  // is token stored
+
+        if (token != "")
+        {
+            /*  {"isSuccess":true,"message":"Success" ... */
+
+            String name = preferences.getString("userName","");  // try to get username
+            String parameters = "/?user=";
+
+            if (name != "")
+            {
+                parameters += name;
+            }
+            else // display error and exit
+            {
+                Toast.makeText(getActivity(), "Request failed, User Name Unknown", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            urlAsString += parameters;
+            String urlEncoded = Uri.encode(urlAsString);
+
+            Request request = new Request.Builder()
+                    .url(urlAsString)
+                    .addHeader("Authorization", "Bearer " + token)
+                    .delete()
+                    .build();
+
+            OkHttpClient trustAllclient = Helper.trustAllSslClient(client);
+
+            trustAllclient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    final String mMessage = e.getMessage().toString();
+                    Log.w("failure Response", mMessage);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "Request failed, Please check connection and try again", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    //call.cancel();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+
+                    final String mMessage = response.body().string();
+                    Log.w("success Response", mMessage);
+
+                    if (response.isSuccessful()){
+                        try {
+                            final JSONObject json = new JSONObject(mMessage);
+
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    try
+                                    {
+                                        BottomNavigationActivity navActivity = ((BottomNavigationActivity) getActivity());
+
+                                        Boolean success = json.getBoolean("isSuccess");
+                                        Log.i("JSON = ", success.toString());
+
+                                        if (success)
+                                        {
+                                            Toast.makeText(getActivity(), "Account Deleted Successfully - " + name, Toast.LENGTH_SHORT).show();
+                                            BottomNavigationView navigation = (BottomNavigationView) getActivity().findViewById(R.id.navigation);
+                                            logoutUser();
+                                        }
+                                        else // check error message exists
+                                        {
+                                            String theMessage = json.getString("message");
+
+                                            if (theMessage == null || theMessage == "")
+                                            {
+                                                Toast.makeText(getActivity(), "Error Deleting User. Please Try again.", Toast.LENGTH_SHORT).show();
+                                            }
+                                            else
+                                            {
+                                                Toast.makeText(getActivity(), "Error Deleting User - " + theMessage, Toast.LENGTH_SHORT).show();
+                                            }
+
+                                        }
+
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Toast.makeText(getActivity(), "Error deleting user. Try again.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                    } // end response success
+                    else   // unsuccessful response
+                    {
+                        if (response.code() == 400 || response.code() == 401) // received a response from server
+                        {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    Toast.makeText(getActivity(), "Unauthorized Error: verify username and password", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                        else
+                        {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run()
+                                {
+                                    Toast.makeText(getActivity(), "Network related error. Please try again", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        return;
+                    }
+
+                }
+            });
+
+        }
+        else  // no token found
+        {
+            Toast.makeText(getActivity(), "User Not Found", Toast.LENGTH_SHORT).show();
+            getActivity().finish(); // logout
+        }
+
+    }
+
+
+    private void logoutUser()
+    {
+        // Toast.makeText(getActivity(), "Logout", Toast.LENGTH_SHORT).show();
+
+        preferences.edit().remove(".expires").commit();
+        preferences.edit().remove("access_token").commit();
+        preferences.edit().remove("userName").commit();
+
+        Intent i = new Intent(getActivity(), WelcomeActivity.class);
+        this.startActivity(i);
     }
 
 
