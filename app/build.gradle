@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
     defaultConfig {
+        compileSdk 33
         applicationId "com.jdsv650.b_ware"
         minSdkVersion 19
-        targetSdkVersion 31
-        versionCode 6
-        versionName "1.6"
+        targetSdkVersion 33
+        versionCode 7
+        versionName "1.7"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
     }
